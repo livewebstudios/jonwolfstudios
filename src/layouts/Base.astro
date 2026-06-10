@@ -163,9 +163,18 @@ const isCurrent = (href: string) =>
         toggle.setAttribute('aria-expanded', String(Boolean(open)));
       });
 
-      // ---- Scroll reveals: fade + 12px rise, once ----
       const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      const revealEls = document.querySelectorAll('.reveal');
+
+      // ---- Scroll reveals: fade + rise, once, 60ms sibling stagger ----
+      const revealEls = document.querySelectorAll<HTMLElement>('.reveal');
+      const groups = new Map<Element, number>();
+      revealEls.forEach((el) => {
+        const parent = el.parentElement ?? document.body;
+        const i = groups.get(parent) ?? 0;
+        el.style.setProperty('--reveal-i', String(i));
+        groups.set(parent, i + 1);
+      });
+
       if (reduced || !('IntersectionObserver' in window)) {
         revealEls.forEach((el) => el.classList.add('is-in'));
       } else {
@@ -178,15 +187,60 @@ const isCurrent = (href: string) =>
               }
             }
           },
-          { threshold: 0.15, rootMargin: '0px 0px -5% 0px' }
+          { threshold: 0.12, rootMargin: '0px 0px -5% 0px' }
         );
         revealEls.forEach((el) => io.observe(el));
+      }
+
+      // ---- Parallax on atmosphere layers (max ~40px total travel) ----
+      const layers = document.querySelectorAll<HTMLElement>('.bg-layer img, [data-parallax]');
+      if (!reduced && layers.length > 0) {
+        let ticking = false;
+        const update = () => {
+          ticking = false;
+          const vh = window.innerHeight;
+          layers.forEach((img) => {
+            const host = img.closest('section, .hero, article') ?? img;
+            const r = host.getBoundingClientRect();
+            if (r.bottom < 0 || r.top > vh) return;
+            // -1 (entering) → 1 (leaving), scaled to ±20px
+            const p = (r.top + r.height / 2 - vh / 2) / (vh / 2 + r.height / 2);
+            img.style.transform = `translateY(${(-p * 20).toFixed(1)}px)`;
+          });
+        };
+        const onScroll = () => {
+          if (!ticking) {
+            ticking = true;
+            requestAnimationFrame(update);
+          }
+        };
+        document.addEventListener('scroll', onScroll, { passive: true });
+        update();
+      }
+
+      // ---- Buttons: flood from entry side + magnetic pull (≤6px) ----
+      const canHover = window.matchMedia('(hover: hover)').matches;
+      if (canHover && !reduced) {
+        document.querySelectorAll<HTMLElement>('.btn').forEach((btn) => {
+          btn.addEventListener('mouseenter', (e) => {
+            const r = btn.getBoundingClientRect();
+            btn.style.setProperty('--btn-origin', e.clientX < r.left + r.width / 2 ? 'left' : 'right');
+          });
+          btn.addEventListener('mousemove', (e) => {
+            const r = btn.getBoundingClientRect();
+            const dx = ((e.clientX - (r.left + r.width / 2)) / (r.width / 2)) * 6;
+            const dy = ((e.clientY - (r.top + r.height / 2)) / (r.height / 2)) * 4;
+            btn.style.transform = `translate(${dx.toFixed(1)}px, ${dy.toFixed(1)}px)`;
+          });
+          btn.addEventListener('mouseleave', () => {
+            btn.style.transform = '';
+          });
+        });
       }
 
       // ---- Follow-spot cursor ----
       // A lazy operator chasing a performer: lerp toward the pointer, never snap.
       const spot = document.querySelector<HTMLElement>('.followspot');
-      const canHover = window.matchMedia('(hover: hover)').matches;
 
       if (spot && canHover && !reduced) {
         const WORLD_COLORS: Record<string, string> = {
@@ -232,10 +286,11 @@ const isCurrent = (href: string) =>
           const world = worldEl?.getAttribute('data-world') ?? 'music';
           spot.style.setProperty('--spot-color', WORLD_COLORS[world] ?? WORLD_COLORS.music);
 
-          // The spot finds its mark on interactive elements
-          const interactive = el?.closest('a, button, input, select, textarea, summary, [role="button"]');
-          targetScale = interactive ? 0.6 : 1;
-          spot.style.opacity = interactive ? '1' : '';
+          // Light modes: wash on the diptych, beam on setlist rows, mark on links
+          const wide = el?.closest('[data-spot="wide"]');
+          const tight = el?.closest('[data-spot="tight"], a, button, input, select, textarea, summary, [role="button"]');
+          targetScale = wide ? 1.4 : tight ? 0.6 : 1;
+          spot.style.opacity = tight ? '1' : '';
 
           wake();
         });

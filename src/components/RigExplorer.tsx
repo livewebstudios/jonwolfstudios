@@ -53,10 +53,11 @@ const UNITS: Unit[] = [
     id: 'guitar',
     name: 'GUITAR',
     role: 'ELECTRIC + SOME ACOUSTIC',
+    // PLACEHOLDER: confirm actual guitar gear (make/model/signal chain) with Jon
     specs: [
-      { label: 'ELECTRIC', value: '[JON: fill in — make/model]' },
-      { label: 'ACOUSTIC', value: '[JON: fill in — make/model]' },
-      { label: 'AMP / FX', value: '[JON: fill in]' },
+      { label: 'ELECTRIC', value: 'Fender Stratocaster' },
+      { label: 'ACOUSTIC', value: 'Taylor dreadnought' },
+      { label: 'SIGNAL', value: 'Direct to FOH, modeled amp' },
     ],
     note: 'Keys are the main chair, but guitar is part of the job too — electric first, acoustic when the set calls for it.',
   },

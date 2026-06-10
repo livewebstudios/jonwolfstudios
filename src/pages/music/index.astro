@@ -40,6 +40,9 @@ const jsonLd = [
   <article data-world="music">
     <!-- INTRO -->
     <section class="section page-head">
+      <div class="bg-layer" aria-hidden="true">
+        <img src={root + 'images/atmos/music-rig.jpg'} alt="" fetchpriority="high" width="1600" height="893" />
+      </div>
       <div class="container">
         <p class="kicker reveal">THE STAGE</p>
         <h1 class="reveal">Performing keyboardist &amp; guitarist.</h1>
@@ -53,7 +56,7 @@ const jsonLd = [
     </section>
 
     <!-- RIG EXPLORER -->
-    <section class="section rig-section" aria-label="The rig">
+    <section class="section" aria-label="The rig">
       <div class="container">
         <p class="kicker reveal">THE RIG</p>
         <h2 class="reveal" style="margin-bottom: 2rem;">What's on stage.</h2>
@@ -64,7 +67,10 @@ const jsonLd = [
     </section>
 
     <!-- BRITISH INVASION YEARS -->
-    <section class="section biy">
+    <section class="section">
+      <div class="bg-layer" aria-hidden="true">
+        <img src={root + 'images/atmos/shows-theater.jpg'} alt="" loading="lazy" width="1600" height="893" />
+      </div>
       <div class="container">
         <p class="kicker reveal">THE BAND</p>
         <h2 class="reveal">The British Invasion Years</h2>
@@ -87,19 +93,30 @@ const jsonLd = [
     </section>
 
     <!-- MEDIA -->
-    <section class="section media">
+    <section class="section">
       <div class="container">
         <p class="kicker reveal">MEDIA</p>
         <h2 class="reveal" style="margin-bottom: 2rem;">On stage, in pixels.</h2>
-        <div class="reveal placeholder-note">
-          [JON: photos/video embeds — live shots, show footage, or BIY promo video. Grid is built
-          and waiting.]
+        <!-- PLACEHOLDER: replace these atmosphere stills with real live shots / BIY footage from Jon -->
+        <div class="media-grid">
+          <figure class="media-grid__item media-grid__item--wide reveal">
+            <img src={root + 'images/atmos/music-rig.jpg'} alt="Multi-keyboard live rig in concert haze under amber and blue stage light" loading="lazy" width="1600" height="893" />
+            <figcaption class="mono-label">THE RIG, IN ITS NATURAL HABITAT</figcaption>
+          </figure>
+          <figure class="media-grid__item reveal">
+            <img src={root + 'images/atmos/door-stage-hands.jpg'} alt="Hands on keyboard keys under warm stage light" loading="lazy" width="1195" height="1600" />
+            <figcaption class="mono-label">KEYS UNDER TUNGSTEN</figcaption>
+          </figure>
+          <figure class="media-grid__item reveal">
+            <img src={root + 'images/atmos/about-hammers.jpg'} alt="Piano hammers and strings inside an open grand piano" loading="lazy" width="1600" height="893" />
+            <figcaption class="mono-label">INSIDE THE INSTRUMENT</figcaption>
+          </figure>
         </div>
       </div>
     </section>
 
     <!-- CTA -->
-    <section class="section music-cta">
+    <section class="section">
       <div class="container music-cta__inner reveal">
         <h2>Booking a show?</h2>
         <p class="lede">Private events, theaters, or a band that needs keys that cover everything.</p>
@@ -110,9 +127,12 @@ const jsonLd = [
 </Base>
 
 <style>
-  .page-head { padding-bottom: var(--space-block); }
-
-  .biy { border-top: 1px solid var(--scrim); }
+  .page-head {
+    min-height: 52svh;
+    display: grid;
+    align-items: end;
+    padding-top: clamp(5rem, 12vh, 8rem);
+  }
 
   .biy__body {
     margin-top: 1.5rem;
@@ -121,23 +141,58 @@ const jsonLd = [
     max-width: 42rem;
   }
 
-  .media { border-top: 1px solid var(--scrim); }
+  .media-grid {
+    display: grid;
+    gap: 1.25rem;
+    grid-template-columns: 1fr;
+  }
 
-  .music-cta { border-top: 1px solid var(--scrim); }
+  @media (min-width: 760px) {
+    .media-grid { grid-template-columns: 1fr 1fr; }
+    .media-grid__item--wide { grid-column: 1 / -1; }
+  }
+
+  .media-grid__item {
+    margin: 0;
+    border: 1px solid var(--scrim);
+    border-radius: var(--radius);
+    overflow: hidden;
+    background: var(--stage);
+  }
+
+  .media-grid__item img {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    transition: transform 0.7s var(--ease-out), opacity 0.7s var(--ease-out);
+    opacity: 0.85;
+  }
+
+  .media-grid__item--wide img { aspect-ratio: 21 / 9; }
+
+  .media-grid__item:hover img {
+    transform: scale(1.03);
+    opacity: 1;
+  }
+
+  .media-grid__item figcaption {
+    padding: 0.85rem 1.1rem;
+    border-top: 1px solid var(--scrim);
+  }
 
   .music-cta__inner {
     text-align: center;
     display: grid;
     justify-items: center;
     gap: 1.25rem;
-    padding-block: clamp(2rem, 5vw, 4rem);
+    padding-block: clamp(1.5rem, 4vw, 3rem);
   }
 </style>
 
 <style is:global>
   /* RigExplorer — tech-rider chrome (global: rendered inside React island) */
   .rig {
-    background: var(--stage);
+    background: color-mix(in srgb, var(--stage) 92%, transparent);
     border: 1px solid var(--scrim);
     border-radius: var(--radius);
     overflow: hidden;

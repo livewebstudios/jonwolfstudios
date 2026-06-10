@@ -1,3 +1,49 @@
 {
-  "shows": []
+  "shows": [
+    {
+      "date": "2026-07-18",
+      "venue": "The Crescent Ballroom",
+      "city": "Asbury Park",
+      "state": "NJ",
+      "band": "The British Invasion Years",
+      "ticketUrl": "https://britishinvasionyears.com"
+    },
+    {
+      "date": "2026-07-31",
+      "venue": "Riverside Bandshell",
+      "city": "Red Bank",
+      "state": "NJ",
+      "band": "The British Invasion Years"
+    },
+    {
+      "date": "2026-08-15",
+      "venue": "The Palace Stage",
+      "city": "New Hope",
+      "state": "PA",
+      "band": "The British Invasion Years",
+      "ticketUrl": "https://britishinvasionyears.com"
+    },
+    {
+      "date": "2026-09-06",
+      "venue": "Harborlight Pavilion",
+      "city": "Point Pleasant",
+      "state": "NJ",
+      "band": "The British Invasion Years"
+    },
+    {
+      "date": "2026-10-10",
+      "venue": "The Stanton Theatre",
+      "city": "Morristown",
+      "state": "NJ",
+      "band": "The British Invasion Years",
+      "ticketUrl": "https://britishinvasionyears.com"
+    },
+    {
+      "date": "2026-11-21",
+      "venue": "The Gaslight Room",
+      "city": "Nyack",
+      "state": "NY",
+      "band": "The British Invasion Years"
+    }
+  ]
 }

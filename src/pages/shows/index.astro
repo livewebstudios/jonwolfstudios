@@ -52,6 +52,9 @@ const breadcrumb = {
 >
   <article data-world="music">
     <section class="section page-head">
+      <div class="bg-layer" aria-hidden="true">
+        <img src={root + 'images/atmos/shows-theater.jpg'} alt="" fetchpriority="high" width="1600" height="893" />
+      </div>
       <div class="container">
         <p class="kicker reveal">SET TIMES</p>
         <h1 class="reveal">Shows</h1>
@@ -62,26 +65,34 @@ const breadcrumb = {
       </div>
     </section>
 
-    <section class="section showlist" aria-label="Upcoming shows">
+    <section class="section" aria-label="Upcoming shows">
       <div class="container">
         <h2 class="showlist__header reveal">UPCOMING</h2>
 
         {
           upcoming.length > 0 ? (
-            <ol class="showlist__list">
+            <ol class="setlist">
+              {/* PLACEHOLDER: venues below are invented placeholders — replace with real booked dates via /admin/ */}
               {upcoming.map((show) => (
-                <li class="showlist__item reveal">
-                  <span class="mono showlist__date">{formatShowDate(show.date)}</span>
-                  <span class="showlist__venue">{show.venue}</span>
-                  <span class="mono-label">
-                    {show.city}, {show.state}
-                  </span>
-                  <span class="mono-label showlist__band">{show.band}</span>
+                <li class="setlist__row reveal" data-spot="tight">
                   {show.ticketUrl ? (
-                    <a class="btn btn--ghost showlist__tickets" href={show.ticketUrl} rel="noopener">
-                      Tickets
+                    <a class="setlist__link" href={show.ticketUrl} rel="noopener">
+                      <span class="setlist__date">{formatShowDate(show.date)}</span>
+                      <span class="setlist__venue">{show.venue}</span>
+                      <span class="setlist__where">
+                        {show.city}, {show.state} — {show.band}
+                      </span>
+                      <span class="setlist__tix">TICKETS →</span>
                     </a>
-                  ) : null}
+                  ) : (
+                    <div class="setlist__static">
+                      <span class="setlist__date">{formatShowDate(show.date)}</span>
+                      <span class="setlist__venue">{show.venue}</span>
+                      <span class="setlist__where">
+                        {show.city}, {show.state} — {show.band}
+                      </span>
+                    </div>
+                  )}
                 </li>
               ))}
             </ol>
@@ -99,15 +110,16 @@ const breadcrumb = {
           past.length > 0 ? (
             <>
               <h2 class="showlist__header showlist__header--past reveal">PAST</h2>
-              <ol class="showlist__list showlist__list--past">
+              <ol class="setlist setlist--past">
                 {past.map((show) => (
-                  <li class="showlist__item reveal">
-                    <span class="mono showlist__date">{formatShowDate(show.date)}</span>
-                    <span class="showlist__venue">{show.venue}</span>
-                    <span class="mono-label">
-                      {show.city}, {show.state}
-                    </span>
-                    <span class="mono-label showlist__band">{show.band}</span>
+                  <li class="setlist__row reveal">
+                    <div class="setlist__static">
+                      <span class="setlist__date">{formatShowDate(show.date)}</span>
+                      <span class="setlist__venue">{show.venue}</span>
+                      <span class="setlist__where">
+                        {show.city}, {show.state} — {show.band}
+                      </span>
+                    </div>
                   </li>
                 ))}
               </ol>
@@ -120,9 +132,12 @@ const breadcrumb = {
 </Base>
 
 <style>
-  .page-head { padding-bottom: var(--space-block); }
-
-  .showlist { border-top: 1px solid var(--scrim); }
+  .page-head {
+    min-height: 48svh;
+    display: grid;
+    align-items: end;
+    padding-top: clamp(5rem, 12vh, 8rem);
+  }
 
   .showlist__header {
     font-family: var(--font-mono);
@@ -137,38 +152,6 @@ const breadcrumb = {
     margin-top: 4rem;
     color: var(--bone-dim);
   }
-
-  .showlist__list {
-    list-style: none;
-    padding: 0;
-  }
-
-  .showlist__item {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 0.35rem;
-    padding-block: 1.4rem;
-    border-bottom: 1px solid var(--scrim);
-  }
-
-  @media (min-width: 800px) {
-    .showlist__item {
-      grid-template-columns: 15rem 1.4fr 1fr 1fr auto;
-      align-items: center;
-      gap: 1.5rem;
-    }
-  }
-
-  .showlist__date { color: var(--accent); }
-
-  .showlist__venue {
-    font-family: var(--font-display);
-    font-weight: 600;
-    font-size: 1.15rem;
-  }
-
-  .showlist__list--past .showlist__date { color: var(--bone-dim); }
-  .showlist__list--past .showlist__venue { color: var(--bone-dim); font-weight: 500; }
 
   .showlist__empty {
     padding: clamp(2.5rem, 6vw, 4.5rem);

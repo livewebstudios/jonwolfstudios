@@ -33,6 +33,9 @@ const jsonLd = [
 >
   <article>
     <section class="section page-head" data-world="music">
+      <div class="bg-layer" aria-hidden="true">
+        <img src={root + 'images/atmos/notes-desk.jpg'} alt="" fetchpriority="high" width="1600" height="893" />
+      </div>
       <div class="container">
         <p class="kicker reveal">FIELD NOTES</p>
         <h1 class="reveal">Notes</h1>
@@ -67,7 +70,12 @@ const jsonLd = [
 </Base>
 
 <style>
-  .page-head { padding-bottom: var(--space-block); }
+  .page-head {
+    min-height: 42svh;
+    display: grid;
+    align-items: end;
+    padding-top: clamp(5rem, 12vh, 8rem);
+  }
 
   .notes-list { border-top: 1px solid var(--scrim); }
 

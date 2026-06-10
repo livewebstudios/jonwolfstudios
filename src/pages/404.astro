@@ -11,6 +11,9 @@ const root = relRoot(Astro.url.pathname);
   world="music"
 >
   <section class="section lost" data-world="music">
+    <div class="bg-layer" aria-hidden="true">
+      <img src={root + 'images/atmos/door-404.jpg'} alt="" fetchpriority="high" width="1600" height="893" />
+    </div>
     <div class="container lost__inner">
       <p class="kicker reveal">HOUSE LIGHTS UP</p>
       <h1 class="reveal">Wrong stage door.</h1>
@@ -26,7 +29,7 @@ const root = relRoot(Astro.url.pathname);
 </Base>
 
 <style>
-  .lost { min-height: 60svh; display: grid; align-items: center; }
+  .lost { min-height: 72svh; display: grid; align-items: center; }
 
   .lost__inner { max-width: 44rem; }
 </style>

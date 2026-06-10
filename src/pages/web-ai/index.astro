@@ -40,6 +40,9 @@ const jsonLd = [
   <article data-world="web">
     <!-- INTRO -->
     <section class="section page-head">
+      <div class="bg-layer" aria-hidden="true">
+        <img src={root + 'images/atmos/webai-circuit.jpg'} alt="" fetchpriority="high" width="1600" height="893" />
+      </div>
       <div class="container">
         <p class="kicker reveal">THE STUDIO</p>
         <h1 class="reveal">Twenty years building the web. Now building what's next.</h1>
@@ -81,10 +84,13 @@ const jsonLd = [
             businesses figure out where AI genuinely fits in their operations, and teaching teams
             to use the tooling without the hype.
           </p>
-          <div class="reveal placeholder-note">
-            [JON: confirm positioning — offer scope, target clients, and whether this books through
-            LWS or direct.]
-          </div>
+          <!-- PLACEHOLDER: confirm AI consulting positioning with Jon — scope, target clients, books through LWS or direct -->
+          <p class="reveal">
+            The shape of the work: a walkthrough of how your business actually runs, an honest map
+            of where AI saves you hours versus where it wastes them, and hands-on setup of the two
+            or three workflows that earn their keep — with your team trained to run them without
+            me.
+          </p>
         </div>
       </div>
     </section>
@@ -130,7 +136,12 @@ const jsonLd = [
 </Base>
 
 <style>
-  .page-head { padding-bottom: var(--space-block); }
+  .page-head {
+    min-height: 48svh;
+    display: grid;
+    align-items: end;
+    padding-top: clamp(5rem, 12vh, 8rem);
+  }
 
   .lws { border-top: 1px solid var(--scrim); }
 

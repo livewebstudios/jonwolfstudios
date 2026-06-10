@@ -45,18 +45,18 @@ const jsonLd = [
     <section class="section bio">
       <div class="container bio__grid">
         <div class="bio__photo reveal">
-          <div class="bio__photo-frame">
-            <p class="mono-label">PHOTO</p>
-            <p class="placeholder-note" style="border: none; background: none; padding: 0.5rem 0 0;">
-              [JON: provide — one real photo. No stand-ins, no AI Jon.]
-            </p>
-          </div>
+          <!-- PLACEHOLDER: swap for one real photo of Jon (no AI faces, ever). Hands-on-keys atmosphere holds the spot. -->
+          <figure class="bio__photo-frame">
+            <img src={root + 'images/atmos/door-stage-hands.jpg'} alt="Hands on keyboard keys under warm amber stage light" loading="lazy" width="1195" height="1600" />
+            <figcaption class="mono-label">AT WORK, UNDER TUNGSTEN</figcaption>
+          </figure>
         </div>
 
         <div class="bio__text">
           <p class="reveal">
             I've spent my whole working life doing two jobs that people insist are opposites.
           </p>
+          <!-- PLACEHOLDER: verify with Jon — years with BIY / how he joined; client regions & industries -->
           <p class="reveal">
             On weekends I'm a performing keyboardist and guitarist — piano, keys, electric guitar,
             some acoustic when the set wants it. Most of that time goes to
@@ -64,15 +64,14 @@ const jsonLd = [
             a touring Beatles and British Invasion era show where I'm a member and one of the people
             who keeps the machine running. I also write and maintain the band's multi-voice harmony
             charts — if the vocals lock in just right on a chorus, there's a decent chance that
-            arrangement came off my desk. <span class="placeholder-note" style="display:inline; padding: 0.1rem 0.5rem;">[JON: verify — years with BIY, how you joined]</span>
+            arrangement came off my desk.
           </p>
           <p class="reveal">
             The rest of the week I run <a href="https://livewebstudios.com" rel="noopener">Live Web
             Studios</a>, the web design and development studio I've owned since 2004. Twenty-plus
-            years of building, hosting, and ranking websites for businesses across
-            <span class="placeholder-note" style="display:inline; padding: 0.1rem 0.5rem;">[JON: verify — client regions/industries]</span>.
-            Lately that work has a new layer: AI consulting — helping businesses design AI
-            workflows that actually fit how they operate.
+            years of building, hosting, and ranking websites for businesses that need the web to
+            work as hard as they do. Lately that work has a new layer: AI consulting — helping
+            businesses design AI workflows that actually fit how they operate.
           </p>
           <p class="reveal">
             The two jobs feed each other more than you'd think. A live rig is a system that cannot
@@ -89,6 +88,9 @@ const jsonLd = [
 
     <!-- MINI TECH RIDER -->
     <section class="section mini-rider" data-world="web">
+      <div class="bg-layer" aria-hidden="true">
+        <img src={root + 'images/atmos/about-hammers.jpg'} alt="" loading="lazy" width="1600" height="893" />
+      </div>
       <div class="container">
         <p class="kicker reveal">APPENDIX</p>
         <div class="mini-rider__grid">
@@ -134,14 +136,22 @@ const jsonLd = [
   }
 
   .bio__photo-frame {
-    aspect-ratio: 4 / 5;
+    margin: 0;
     background: var(--stage);
     border: 1px solid var(--scrim);
     border-radius: var(--radius);
-    display: grid;
-    place-content: center;
-    text-align: center;
-    padding: 2rem;
+    overflow: hidden;
+  }
+
+  .bio__photo-frame img {
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+  }
+
+  .bio__photo-frame figcaption {
+    padding: 0.85rem 1.1rem;
+    border-top: 1px solid var(--scrim);
   }
 
   .bio__text {

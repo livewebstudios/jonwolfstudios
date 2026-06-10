@@ -45,7 +45,7 @@ const jsonLd = [
 
     <section class="section contact-zone">
       <div class="container contact-zone__grid">
-        <!-- [JON: replace FORM_ID with the real Formspree form ID before launch] -->
+        {/* PLACEHOLDER: replace FORM_ID with the real Formspree form ID before launch */}
         <form
           class="contact-form reveal"
           action="https://formspree.io/f/FORM_ID"
@@ -97,7 +97,12 @@ const jsonLd = [
 </Base>
 
 <style>
-  .page-head { padding-bottom: var(--space-block); }
+  .page-head {
+    padding-block: clamp(5rem, 12vh, 8rem) var(--space-block);
+    background:
+      radial-gradient(ellipse 70% 90% at 80% -20%, color-mix(in srgb, var(--tungsten) 10%, transparent), transparent 60%),
+      radial-gradient(ellipse 50% 70% at 10% 120%, color-mix(in srgb, var(--signal) 6%, transparent), transparent 65%);
+  }
 
   .contact-zone { border-top: 1px solid var(--scrim); }
 
