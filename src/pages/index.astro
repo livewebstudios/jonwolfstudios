@@ -1,0 +1,290 @@
+---
+import Base from '../layouts/Base.astro';
+import HeroSequence from '../components/HeroSequence.tsx';
+import { relRoot } from '../lib/paths';
+import { getShows, formatShowDate } from '../lib/content';
+
+const root = relRoot(Astro.url.pathname);
+const { upcoming } = getShows();
+const nextShows = upcoming.slice(0, 3);
+
+const personJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: 'Jon Wolf',
+  url: 'https://jonwolfnj.com/',
+  jobTitle: ['Musician', 'Web Developer', 'AI Consultant'],
+  email: 'mailto:jonwolf@livewebstudios.com',
+  homeLocation: {
+    '@type': 'Place',
+    address: { '@type': 'PostalAddress', addressRegion: 'NJ', addressCountry: 'US' },
+  },
+  memberOf: {
+    '@type': 'PerformingGroup',
+    name: 'The British Invasion Years',
+    url: 'https://britishinvasionyears.com',
+  },
+  worksFor: {
+    '@type': 'Organization',
+    name: 'Live Web Studios',
+    url: 'https://livewebstudios.com',
+    foundingDate: '2004',
+  },
+  knowsAbout: [
+    'Keyboard performance',
+    'Live music',
+    'Apple MainStage',
+    'Web design',
+    'Web development',
+    'AI workflow consulting',
+  ],
+};
+---
+
+<Base
+  title="Jon Wolf — NJ Keyboardist, Guitarist & Web Developer"
+  description="Jon Wolf: performing keyboardist and guitarist in North Jersey with The British Invasion Years, owner of Live Web Studios, and AI workflow consultant."
+  world="music"
+  jsonLd={[personJsonLd]}
+>
+  <!-- HERO -->
+  <section class="hero" data-world="music">
+    <HeroSequence client:load root={root} />
+  </section>
+
+  <!-- TWO-DOOR SPLIT -->
+  <section class="section doors" aria-label="Two worlds">
+    <div class="container">
+      <div class="doors__grid">
+        <a class="door reveal" data-world="music" href={root + 'music/'}>
+          <p class="kicker">TUNGSTEN · WARM</p>
+          <h2>The Stage</h2>
+          <p class="lede">
+            Keys and guitar with The British Invasion Years. MainStage rigs, harmony charts, and
+            rooms full of people who remember every word.
+          </p>
+          <span class="door__cue mono-label">ENTER THE MUSIC →</span>
+        </a>
+
+        <a class="door reveal" data-world="web" href={root + 'web-ai/'}>
+          <p class="kicker">SIGNAL · COOL</p>
+          <h2>The Studio</h2>
+          <p class="lede">
+            Twenty-plus years building the web through Live Web Studios — now wiring AI workflows
+            into businesses that are ready for them.
+          </p>
+          <span class="door__cue mono-label">ENTER THE WORK →</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- NEXT SHOWS -->
+  <section class="section shows-strip" data-world="music">
+    <div class="container">
+      <p class="kicker reveal">NEXT SHOWS</p>
+      {
+        nextShows.length > 0 ? (
+          <ol class="shows-strip__list">
+            {nextShows.map((show) => (
+              <li class="shows-strip__item reveal">
+                <span class="mono shows-strip__date">{formatShowDate(show.date)}</span>
+                <span class="shows-strip__venue">{show.venue}</span>
+                <span class="mono-label">
+                  {show.city}, {show.state}
+                </span>
+              </li>
+            ))}
+          </ol>
+        ) : (
+          <p class="lede reveal">
+            Dates are being booked now. The full calendar lives on the shows page — check back, or
+            just ask.
+          </p>
+        )
+      }
+      <p class="reveal" style="margin-top: 2rem;">
+        <a class="btn btn--ghost" href={root + 'shows/'}>Full Calendar</a>
+      </p>
+    </div>
+  </section>
+
+  <!-- CURRENTLY -->
+  <section class="section currently" data-world="web">
+    <div class="container">
+      <p class="kicker reveal">CURRENTLY</p>
+      <div class="reveal placeholder-note">
+        [JON: fill in — 2–3 sentences on what you're working on right now: current shows, current
+        builds, what you're exploring on the AI side.]
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT CTA -->
+  <section class="section closer" data-world="music">
+    <div class="container closer__inner reveal">
+      <h2>Got a stage, a site, or a question about AI?</h2>
+      <p class="lede">One inbox covers all three.</p>
+      <a class="btn" href={root + 'contact/'}>Let's talk.</a>
+    </div>
+  </section>
+</Base>
+
+<style>
+  /* HERO — full viewport, stage haze */
+  .hero {
+    min-height: 92svh;
+    display: grid;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+    background:
+      radial-gradient(ellipse 90% 60% at 72% -10%, color-mix(in srgb, var(--tungsten) 13%, transparent), transparent 60%),
+      radial-gradient(ellipse 60% 50% at 15% 110%, color-mix(in srgb, var(--signal) 7%, transparent), transparent 65%),
+      var(--ink);
+  }
+
+  .hero :global(.hero__inner) {
+    width: min(var(--container), 100% - var(--gutter) * 2);
+    margin-inline: auto;
+    padding-block: clamp(5rem, 12vh, 9rem);
+    position: relative;
+    z-index: 1;
+  }
+
+  /* The beam: a soft diagonal shaft of tungsten from upper right */
+  .hero :global(.hero__beam) {
+    position: absolute;
+    inset: -20% -10% auto auto;
+    width: 70%;
+    height: 130%;
+    pointer-events: none;
+    background: linear-gradient(
+      215deg,
+      color-mix(in srgb, var(--tungsten) 16%, transparent) 0%,
+      color-mix(in srgb, var(--tungsten) 5%, transparent) 35%,
+      transparent 62%
+    );
+    filter: blur(6px);
+    z-index: -1;
+  }
+
+  .hero :global(.hero__title) {
+    display: grid;
+    margin-bottom: 1.75rem;
+  }
+
+  .hero :global(.hero__line) { display: block; }
+  .hero :global(.hero__line--music) { color: var(--tungsten); }
+  .hero :global(.hero__line--web) { color: var(--signal); }
+
+  .hero :global(.hero__lede) { max-width: 38rem; }
+
+  .hero :global(.hero__ctas) {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-top: 2.5rem;
+  }
+
+  /* TWO DOORS */
+  .doors__grid {
+    display: grid;
+    gap: 1.5rem;
+    grid-template-columns: 1fr;
+  }
+
+  @media (min-width: 800px) {
+    .doors__grid { grid-template-columns: 1fr 1fr; }
+  }
+
+  .door {
+    display: block;
+    text-decoration: none;
+    color: var(--bone);
+    background: var(--stage);
+    border: 1px solid var(--scrim);
+    border-radius: var(--radius);
+    padding: clamp(2rem, 4vw, 3rem);
+    min-height: 20rem;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.35s var(--ease-out), transform 0.35s var(--ease-out);
+  }
+
+  .door::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+      ellipse 80% 70% at 50% -20%,
+      var(--accent-soft),
+      transparent 70%
+    );
+    opacity: 0;
+    transition: opacity 0.45s var(--ease-out);
+  }
+
+  .door:hover {
+    border-color: color-mix(in srgb, var(--accent) 60%, var(--scrim));
+    transform: translateY(-4px);
+  }
+
+  .door:hover::before { opacity: 1; }
+
+  .door h2 { margin-bottom: 1rem; position: relative; }
+  .door .lede { position: relative; }
+
+  .door__cue {
+    display: inline-block;
+    margin-top: 2rem;
+    color: var(--accent);
+    position: relative;
+    transition: letter-spacing 0.3s var(--ease-out);
+  }
+
+  .door:hover .door__cue { letter-spacing: 0.26em; }
+
+  /* SHOWS STRIP */
+  .shows-strip { border-top: 1px solid var(--scrim); }
+
+  .shows-strip__list {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: 0;
+  }
+
+  .shows-strip__item {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.35rem;
+    padding-block: 1.25rem;
+    border-bottom: 1px solid var(--scrim);
+  }
+
+  @media (min-width: 700px) {
+    .shows-strip__item {
+      grid-template-columns: 16rem 1fr auto;
+      align-items: baseline;
+      gap: 1.5rem;
+    }
+  }
+
+  .shows-strip__date { color: var(--accent); }
+  .shows-strip__venue { font-family: var(--font-display); font-weight: 600; font-size: 1.15rem; }
+
+  /* CURRENTLY */
+  .currently { border-top: 1px solid var(--scrim); }
+
+  /* CLOSER */
+  .closer { border-top: 1px solid var(--scrim); }
+
+  .closer__inner {
+    text-align: center;
+    display: grid;
+    justify-items: center;
+    gap: 1.25rem;
+    padding-block: clamp(2rem, 5vw, 4rem);
+  }
+</style>

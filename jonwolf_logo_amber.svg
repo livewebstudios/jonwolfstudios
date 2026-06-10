@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 130" width="560" height="130">
+  <title>Jon Wolf</title>
+  <desc>Jon Wolf piano-key JW monogram with amber accent and wordmark</desc>
+
+  <!-- Black background -->
+  <rect width="560" height="130" fill="#000000"/>
+
+  <!-- ================================================
+       MONOGRAM — 8 bars, two groups of 4
+       Spine (bar 4) is the tallest center pivot
+       Amber #F2A33C applied to the spine — the "lit key"
+       All other bars remain dark charcoal with depth shadow
+       ================================================ -->
+
+  <!-- LEFT GROUP -->
+  <!-- Bar 1: outer left, tall -->
+  <rect x="15" y="27" width="9" height="68" rx="1.5" ry="1.5" fill="#323232"/>
+  <rect x="22.5" y="27" width="1.5" height="68" fill="#1c1c1c"/>
+
+  <!-- Bar 2 -->
+  <rect x="27" y="37" width="9" height="58" rx="1.5" ry="1.5" fill="#2e2e2e"/>
+  <rect x="34.5" y="37" width="1.5" height="58" fill="#1c1c1c"/>
+
+  <!-- Bar 3: J valley -->
+  <rect x="39" y="47" width="9" height="48" rx="1.5" ry="1.5" fill="#282828"/>
+  <rect x="46.5" y="47" width="1.5" height="48" fill="#1a1a1a"/>
+
+  <!-- Bar 4: SPINE — AMBER — tallest center bar, the lit key -->
+  <rect x="51" y="15" width="10" height="80" rx="1.5" ry="1.5" fill="#F2A33C"/>
+  <!-- Amber right-edge shadow: deeper warm tone -->
+  <rect x="59.5" y="15" width="1.5" height="80" fill="#B8721F"/>
+  <!-- Subtle amber glow bleed left of spine (very faint warm wash) -->
+  <rect x="49" y="15" width="2.5" height="80" rx="1" fill="#F2A33C" opacity="0.18"/>
+
+  <!-- RIGHT GROUP -->
+  <!-- Bar 5: W first valley -->
+  <rect x="66" y="43" width="9" height="52" rx="1.5" ry="1.5" fill="#282828"/>
+  <rect x="73.5" y="43" width="1.5" height="52" fill="#1a1a1a"/>
+
+  <!-- Bar 6: W first peak -->
+  <rect x="78" y="31" width="9" height="64" rx="1.5" ry="1.5" fill="#303030"/>
+  <rect x="85.5" y="31" width="1.5" height="64" fill="#1e1e1e"/>
+
+  <!-- Bar 7: W second valley -->
+  <rect x="90" y="45" width="9" height="50" rx="1.5" ry="1.5" fill="#272727"/>
+  <rect x="97.5" y="45" width="1.5" height="50" fill="#1a1a1a"/>
+
+  <!-- Bar 8: outer right -->
+  <rect x="102" y="35" width="9" height="60" rx="1.5" ry="1.5" fill="#2e2e2e"/>
+  <rect x="109.5" y="35" width="1.5" height="60" fill="#1c1c1c"/>
+
+  <!-- BOTTOM ARC — keyboard base curve -->
+  <path d="M 15 95 C 30 102, 47 104, 58 103 C 69 104, 86 102, 111 95"
+        stroke="#2a2a2a" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+
+  <!-- WORDMARK — "JON WOLF" wide-tracked geometric sans -->
+  <!-- Main text in amber to tie wordmark to accent key -->
+  <text
+    x="136" y="65"
+    font-family="'Futura PT', 'Futura', 'Century Gothic', 'Gill Sans MT', 'Trebuchet MS', sans-serif"
+    font-size="24" font-weight="300" letter-spacing="7"
+    fill="#F2A33C"
+    dominant-baseline="middle">JON WOLF</text>
+
+</svg>

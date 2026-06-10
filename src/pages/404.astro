@@ -1,0 +1,32 @@
+---
+import Base from '../layouts/Base.astro';
+import { relRoot } from '../lib/paths';
+
+const root = relRoot(Astro.url.pathname);
+---
+
+<Base
+  title="404 — Wrong Stage Door — Jon Wolf"
+  description="This page doesn't exist. Wrong stage door — the show is back at jonwolfnj.com."
+  world="music"
+>
+  <section class="section lost" data-world="music">
+    <div class="container lost__inner">
+      <p class="kicker reveal">HOUSE LIGHTS UP</p>
+      <h1 class="reveal">Wrong stage door.</h1>
+      <p class="lede reveal" style="margin-top: 1.5rem;">
+        Whatever was here isn't. The spotlight's the only thing keeping you company — follow it back
+        to the show.
+      </p>
+      <p class="reveal" style="margin-top: 2.5rem;">
+        <a class="btn" href={root}>Back to the Stage</a>
+      </p>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .lost { min-height: 60svh; display: grid; align-items: center; }
+
+  .lost__inner { max-width: 44rem; }
+</style>

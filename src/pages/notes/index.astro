@@ -1,0 +1,110 @@
+---
+import Base from '../../layouts/Base.astro';
+import { relRoot } from '../../lib/paths';
+import { getPosts, formatPostDate } from '../../lib/content';
+
+const root = relRoot(Astro.url.pathname);
+const posts = getPosts();
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Blog',
+    name: 'Notes — Jon Wolf',
+    url: 'https://jonwolfnj.com/notes/',
+    author: { '@type': 'Person', name: 'Jon Wolf', url: 'https://jonwolfnj.com/' },
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://jonwolfnj.com/' },
+      { '@type': 'ListItem', position: 2, name: 'Notes', item: 'https://jonwolfnj.com/notes/' },
+    ],
+  },
+];
+---
+
+<Base
+  title="Notes — Jon Wolf on Gear, MainStage & AI"
+  description="Short dispatches from both worlds: live keyboard rigs, MainStage tips, web builds, and AI workflows for business. By Jon Wolf."
+  world="music"
+  jsonLd={jsonLd}
+>
+  <article>
+    <section class="section page-head" data-world="music">
+      <div class="container">
+        <p class="kicker reveal">FIELD NOTES</p>
+        <h1 class="reveal">Notes</h1>
+        <p class="lede reveal" style="margin-top: 1.5rem;">
+          Dispatches from both sides of the desk — gear and MainStage on the amber side, web and AI
+          on the blue.
+        </p>
+      </div>
+    </section>
+
+    <section class="section notes-list" data-world="music">
+      <div class="container">
+        <ol class="notes-list__list">
+          {
+            posts.map((post) => (
+              <li class="notes-list__item reveal" data-world={post.tag}>
+                <a class="notes-list__link" href={root + 'notes/' + post.slug + '/'}>
+                  <span class="mono notes-list__date">{formatPostDate(post.date)}</span>
+                  <span class="notes-list__title">{post.title}</span>
+                  <span class="notes-list__excerpt">{post.excerpt}</span>
+                  <span class="mono-label notes-list__tag" style="color: var(--accent);">
+                    {post.tag === 'music' ? 'MUSIC' : 'WEB + AI'}
+                  </span>
+                </a>
+              </li>
+            ))
+          }
+        </ol>
+      </div>
+    </section>
+  </article>
+</Base>
+
+<style>
+  .page-head { padding-bottom: var(--space-block); }
+
+  .notes-list { border-top: 1px solid var(--scrim); }
+
+  .notes-list__list {
+    list-style: none;
+    padding: 0;
+  }
+
+  .notes-list__item { border-bottom: 1px solid var(--scrim); }
+
+  .notes-list__link {
+    display: grid;
+    gap: 0.4rem;
+    padding-block: 1.75rem;
+    text-decoration: none;
+    color: var(--bone);
+  }
+
+  .notes-list__date {
+    font-size: var(--text-micro);
+    color: var(--bone-dim);
+    letter-spacing: 0.1em;
+  }
+
+  .notes-list__title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: var(--text-h3);
+    transition: color 0.25s var(--ease-out);
+  }
+
+  .notes-list__link:hover .notes-list__title { color: var(--accent); }
+
+  .notes-list__excerpt {
+    color: var(--bone-dim);
+    max-width: 60ch;
+  }
+
+  .notes-list__tag { margin-top: 0.5rem; }
+</style>

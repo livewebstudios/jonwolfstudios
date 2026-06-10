@@ -1,0 +1,12 @@
+{
+  "posts": [
+    {
+      "title": "Why this site exists",
+      "slug": "why-this-site-exists",
+      "date": "2026-06-10",
+      "tag": "web",
+      "excerpt": "Two careers, one domain. A short note on why a working musician who builds websites finally built his own.",
+      "body": "For over twenty years I've built websites for other people through [Live Web Studios](https://livewebstudios.com). Meanwhile, most weekends, I'm on a stage somewhere playing keys with [The British Invasion Years](https://britishinvasionyears.com).\n\nThose two lives mostly stayed in separate folders. This site is where they finally share a directory.\n\nWhat you'll find here over time: notes on running a live keyboard rig (Apple MainStage on an M4 Pro MacBook, a Korg Kronos and a Nord Electro 5 for regional dates), the occasional dispatch from the web side, and what I'm learning as I build AI workflows into real business processes.\n\nThe site itself is built with Astro, deployed on Netlify, version-controlled on GitHub, and built with Claude in the loop — the same stack I'd recommend to a client. Practice what you sell.\n\nIf any of that overlaps with your world — a show, a website, an AI question — reach out."
+    }
+  ]
+}

@@ -1,0 +1,103 @@
+---
+import { marked } from 'marked';
+import Base from '../../layouts/Base.astro';
+import { relRoot } from '../../lib/paths';
+import { getPosts, formatPostDate } from '../../lib/content';
+
+export function getStaticPaths() {
+  return getPosts().map((post) => ({ params: { slug: post.slug }, props: { post } }));
+}
+
+const { post } = Astro.props;
+const root = relRoot(Astro.url.pathname);
+const html = marked.parse(post.body);
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BlogPosting',
+    headline: post.title,
+    description: post.excerpt,
+    datePublished: post.date,
+    url: `https://jonwolfnj.com/notes/${post.slug}/`,
+    author: { '@type': 'Person', name: 'Jon Wolf', url: 'https://jonwolfnj.com/' },
+    publisher: { '@type': 'Person', name: 'Jon Wolf', url: 'https://jonwolfnj.com/' },
+    keywords: post.tag === 'music' ? 'music, live performance, keyboard rig' : 'web development, AI workflows',
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://jonwolfnj.com/' },
+      { '@type': 'ListItem', position: 2, name: 'Notes', item: 'https://jonwolfnj.com/notes/' },
+      { '@type': 'ListItem', position: 3, name: post.title, item: `https://jonwolfnj.com/notes/${post.slug}/` },
+    ],
+  },
+];
+---
+
+<Base
+  title={`${post.title} — Notes — Jon Wolf`}
+  description={post.excerpt}
+  world={post.tag}
+  ogType="article"
+  jsonLd={jsonLd}
+>
+  <article data-world={post.tag}>
+    <section class="section post-head">
+      <div class="container post-head__inner">
+        <p class="kicker reveal">{post.tag === 'music' ? 'NOTES · MUSIC' : 'NOTES · WEB + AI'}</p>
+        <h1 class="reveal">{post.title}</h1>
+        <p class="mono post-head__date reveal">{formatPostDate(post.date)}</p>
+      </div>
+    </section>
+
+    <section class="section post-body">
+      <div class="container">
+        <div class="post-body__prose reveal" set:html={html} />
+        <p style="margin-top: 3.5rem;">
+          <a class="btn btn--ghost" href={root + 'notes/'}>All Notes</a>
+        </p>
+      </div>
+    </section>
+  </article>
+</Base>
+
+<style>
+  .post-head { padding-bottom: var(--space-block); }
+
+  .post-head__date {
+    margin-top: 1.25rem;
+    color: var(--bone-dim);
+    font-size: var(--text-micro);
+    letter-spacing: 0.12em;
+  }
+
+  .post-body { border-top: 1px solid var(--scrim); }
+
+  .post-body__prose {
+    max-width: 42rem;
+    display: grid;
+    gap: 1.25rem;
+  }
+
+  .post-body__prose :global(h2),
+  .post-body__prose :global(h3) {
+    margin-top: 1.25rem;
+  }
+
+  .post-body__prose :global(code) {
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+    background: var(--stage);
+    border: 1px solid var(--scrim);
+    border-radius: 4px;
+    padding: 0.1em 0.4em;
+  }
+
+  .post-body__prose :global(blockquote) {
+    border-left: 2px solid var(--accent);
+    padding-left: 1.25rem;
+    color: var(--bone-dim);
+  }
+</style>

@@ -1,0 +1,48 @@
+backend:
+  name: git-gateway
+  branch: main
+
+media_folder: "public/images/uploads"
+public_folder: "images/uploads"
+
+site_url: https://jonwolfnj.com
+display_url: https://jonwolfnj.com
+logo_url: https://jonwolfnj.com/images/logo.png
+
+collections:
+  - name: "content"
+    label: "Site Content"
+    files:
+      - name: "shows"
+        label: "Shows"
+        file: "_content/shows.json"
+        description: "Live dates. Past shows move below the fold automatically on the next publish."
+        fields:
+          - label: "Shows"
+            name: "shows"
+            widget: "list"
+            summary: "{{fields.date}} — {{fields.venue}} ({{fields.city}}, {{fields.state}})"
+            fields:
+              - { label: "Date", name: "date", widget: "date", format: "YYYY-MM-DD", date_format: "YYYY-MM-DD", time_format: false }
+              - { label: "Venue", name: "venue", widget: "string" }
+              - { label: "City", name: "city", widget: "string" }
+              - { label: "State", name: "state", widget: "string", default: "NJ" }
+              - { label: "Band", name: "band", widget: "string", default: "The British Invasion Years" }
+              - { label: "Ticket Link", name: "ticketUrl", widget: "string", required: false }
+
+      - name: "posts"
+        label: "Notes (Blog)"
+        file: "_content/posts.json"
+        description: "Short posts. Tag controls the accent color: music = amber, web = blue."
+        fields:
+          - label: "Posts"
+            name: "posts"
+            widget: "list"
+            summary: "{{fields.date}} — {{fields.title}}"
+            fields:
+              - { label: "Title", name: "title", widget: "string" }
+              - { label: "Slug", name: "slug", widget: "string", hint: "lowercase-with-dashes, becomes the URL" }
+              - { label: "Date", name: "date", widget: "date", format: "YYYY-MM-DD", date_format: "YYYY-MM-DD", time_format: false }
+              - { label: "Tag", name: "tag", widget: "select", options: ["music", "web"], default: "music" }
+              - { label: "Excerpt", name: "excerpt", widget: "text" }
+              - { label: "Body", name: "body", widget: "markdown" }

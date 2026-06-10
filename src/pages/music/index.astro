@@ -1,0 +1,251 @@
+---
+import Base from '../../layouts/Base.astro';
+import RigExplorer from '../../components/RigExplorer.tsx';
+import { relRoot } from '../../lib/paths';
+
+const root = relRoot(Astro.url.pathname);
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Person',
+    name: 'Jon Wolf',
+    url: 'https://jonwolfnj.com/',
+    jobTitle: 'Musician',
+    description:
+      'Performing keyboardist and guitarist based in North Jersey. Member of The British Invasion Years.',
+    memberOf: {
+      '@type': 'PerformingGroup',
+      name: 'The British Invasion Years',
+      url: 'https://britishinvasionyears.com',
+    },
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://jonwolfnj.com/' },
+      { '@type': 'ListItem', position: 2, name: 'Music', item: 'https://jonwolfnj.com/music/' },
+    ],
+  },
+];
+---
+
+<Base
+  title="Music — Jon Wolf, NJ Keyboardist & Guitarist"
+  description="Performing keyboardist and guitarist in North Jersey. MainStage and hardware rigs, vocal harmony charts, and The British Invasion Years touring show."
+  world="music"
+  jsonLd={jsonLd}
+>
+  <article data-world="music">
+    <!-- INTRO -->
+    <section class="section page-head">
+      <div class="container">
+        <p class="kicker reveal">THE STAGE</p>
+        <h1 class="reveal">Performing keyboardist &amp; guitarist.</h1>
+        <p class="lede reveal" style="margin-top: 1.5rem; max-width: 42rem;">
+          Piano, keyboards, and electric guitar — with some acoustic when the set calls for it.
+          I'm based in North Jersey and play stages well beyond it. The job is making the band
+          sound bigger than its headcount: covering the orchestration, holding down the harmony,
+          and showing up with a rig that never blinks.
+        </p>
+      </div>
+    </section>
+
+    <!-- RIG EXPLORER -->
+    <section class="section rig-section" aria-label="The rig">
+      <div class="container">
+        <p class="kicker reveal">THE RIG</p>
+        <h2 class="reveal" style="margin-bottom: 2rem;">What's on stage.</h2>
+        <div class="reveal">
+          <RigExplorer client:visible />
+        </div>
+      </div>
+    </section>
+
+    <!-- BRITISH INVASION YEARS -->
+    <section class="section biy">
+      <div class="container">
+        <p class="kicker reveal">THE BAND</p>
+        <h2 class="reveal">The British Invasion Years</h2>
+        <div class="biy__body">
+          <p class="reveal">
+            A touring tribute to the Beatles and the British Invasion era — the songs that crossed
+            the Atlantic in the sixties and never left. I'm a member and one of the show's key
+            organizers; we're booked through Blue Raven Entertainment.
+          </p>
+          <p class="reveal">
+            My quiet specialty: the vocal harmonies. I create and maintain the band's multi-voice
+            harmony charts — the arrangements that keep the voices locked where the records put
+            them. It's the kind of work the audience never sees and always hears.
+          </p>
+          <p class="reveal mono">
+            <a href="https://britishinvasionyears.com" rel="noopener">britishinvasionyears.com →</a>
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- MEDIA -->
+    <section class="section media">
+      <div class="container">
+        <p class="kicker reveal">MEDIA</p>
+        <h2 class="reveal" style="margin-bottom: 2rem;">On stage, in pixels.</h2>
+        <div class="reveal placeholder-note">
+          [JON: photos/video embeds — live shots, show footage, or BIY promo video. Grid is built
+          and waiting.]
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="section music-cta">
+      <div class="container music-cta__inner reveal">
+        <h2>Booking a show?</h2>
+        <p class="lede">Private events, theaters, or a band that needs keys that cover everything.</p>
+        <a class="btn" href={root + 'contact/'}>Reach out.</a>
+      </div>
+    </section>
+  </article>
+</Base>
+
+<style>
+  .page-head { padding-bottom: var(--space-block); }
+
+  .biy { border-top: 1px solid var(--scrim); }
+
+  .biy__body {
+    margin-top: 1.5rem;
+    display: grid;
+    gap: 1.25rem;
+    max-width: 42rem;
+  }
+
+  .media { border-top: 1px solid var(--scrim); }
+
+  .music-cta { border-top: 1px solid var(--scrim); }
+
+  .music-cta__inner {
+    text-align: center;
+    display: grid;
+    justify-items: center;
+    gap: 1.25rem;
+    padding-block: clamp(2rem, 5vw, 4rem);
+  }
+</style>
+
+<style is:global>
+  /* RigExplorer — tech-rider chrome (global: rendered inside React island) */
+  .rig {
+    background: var(--stage);
+    border: 1px solid var(--scrim);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+
+  .rig__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.85rem 1.25rem;
+    border-bottom: 1px solid var(--scrim);
+    background: var(--ink);
+    font-family: var(--font-mono);
+    font-size: var(--text-micro);
+    letter-spacing: 0.18em;
+    color: var(--bone-dim);
+  }
+
+  .rig__rev { color: var(--accent); }
+
+  .rig__tabs {
+    display: flex;
+    flex-wrap: wrap;
+    border-bottom: 1px solid var(--scrim);
+  }
+
+  .rig__tab {
+    flex: 1 1 auto;
+    background: none;
+    border: none;
+    border-right: 1px solid var(--scrim);
+    color: var(--bone-dim);
+    font-family: var(--font-mono);
+    font-size: var(--text-micro);
+    letter-spacing: 0.14em;
+    padding: 1rem 1.25rem;
+    cursor: pointer;
+    transition: color 0.25s var(--ease-out), background 0.25s var(--ease-out), box-shadow 0.25s var(--ease-out);
+  }
+
+  .rig__tab:last-child { border-right: none; }
+
+  .rig__tab:hover { color: var(--bone); background: var(--scrim); }
+
+  .rig__tab.is-active {
+    color: var(--accent);
+    background: var(--ink);
+    box-shadow: inset 0 -2px 0 var(--accent);
+  }
+
+  .rig__panel {
+    padding: clamp(1.5rem, 3vw, 2.25rem);
+    animation: rig-in 0.45s var(--ease-out);
+  }
+
+  @keyframes rig-in {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: none; }
+  }
+
+  .rig__role {
+    font-family: var(--font-mono);
+    font-size: var(--text-micro);
+    letter-spacing: 0.2em;
+    color: var(--accent);
+    margin-bottom: 1.5rem;
+  }
+
+  .rig__specs {
+    display: grid;
+    gap: 0;
+    margin-bottom: 1.5rem;
+  }
+
+  .rig__spec {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.15rem;
+    padding-block: 0.7rem;
+    border-bottom: 1px dashed var(--scrim);
+  }
+
+  @media (min-width: 640px) {
+    .rig__spec {
+      grid-template-columns: 14rem 1fr;
+      gap: 1.5rem;
+      align-items: baseline;
+    }
+  }
+
+  .rig__spec dt {
+    font-family: var(--font-mono);
+    font-size: var(--text-micro);
+    letter-spacing: 0.16em;
+    color: var(--bone-dim);
+  }
+
+  .rig__spec dd {
+    font-family: var(--font-mono);
+    font-size: var(--text-small);
+    color: var(--bone);
+    margin: 0;
+  }
+
+  .rig__note {
+    color: var(--bone-dim);
+    font-size: var(--text-small);
+    max-width: 50ch;
+  }
+</style>

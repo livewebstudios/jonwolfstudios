@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>Site Manager — Jon Wolf</title>
+    <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+    <style>
+      :root {
+        --ink: #14121A;
+        --stage: #1E1A28;
+        --bone: #EDE7DC;
+        --tungsten: #F2A33C;
+      }
+
+      body {
+        margin: 0;
+        background: var(--ink);
+      }
+
+      /* LWS branded login shell — shown until Decap takes over */
+      .lws-login {
+        min-height: 100vh;
+        display: grid;
+        place-content: center;
+        text-align: center;
+        font-family: ui-monospace, monospace;
+        color: var(--bone);
+      }
+
+      .lws-login h1 {
+        font-size: 1rem;
+        letter-spacing: 0.3em;
+        color: var(--tungsten);
+        font-weight: 500;
+      }
+
+      .lws-login p { font-size: 0.8rem; opacity: 0.6; letter-spacing: 0.1em; }
+
+      #nc-root:not(:empty) ~ .lws-login { display: none; }
+    </style>
+  </head>
+  <body>
+    <div id="nc-root"></div>
+    <div class="lws-login">
+      <h1>JONWOLFNJ.COM</h1>
+      <p>SITE MANAGER · LOADING…</p>
+    </div>
+
+    <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
+    <script>
+      if (window.netlifyIdentity) {
+        window.netlifyIdentity.on('init', (user) => {
+          if (!user) {
+            window.netlifyIdentity.on('login', () => {
+              document.location.href = '/admin/';
+            });
+          }
+        });
+      }
+    </script>
+  </body>
+</html>

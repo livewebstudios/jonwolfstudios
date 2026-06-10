@@ -1,0 +1,249 @@
+---
+import '@fontsource-variable/bricolage-grotesque';
+import '@fontsource-variable/albert-sans';
+import '@fontsource-variable/jetbrains-mono';
+import '../styles/global.css';
+import { relRoot } from '../lib/paths';
+
+interface Props {
+  title: string;
+  description: string;
+  /** Default world for the page chrome accent */
+  world?: 'music' | 'web';
+  /** Extra JSON-LD blocks, already-shaped objects */
+  jsonLd?: object[];
+  ogType?: string;
+}
+
+const { title, description, world = 'music', jsonLd = [], ogType = 'website' } = Astro.props;
+
+const pathname = Astro.url.pathname;
+const root = relRoot(pathname);
+const canonical = new URL(pathname, 'https://jonwolfnj.com').href;
+
+const navItems = [
+  { label: 'HOME', href: '' },
+  { label: 'MUSIC', href: 'music/' },
+  { label: 'SHOWS', href: 'shows/' },
+  { label: 'WEB + AI', href: 'web-ai/' },
+  { label: 'NOTES', href: 'notes/' },
+  { label: 'ABOUT', href: 'about/' },
+  { label: 'CONTACT', href: 'contact/' },
+];
+
+const isCurrent = (href: string) =>
+  href === '' ? pathname === '/' : pathname.startsWith('/' + href);
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" type="image/svg+xml" href={root + 'favicon.svg'} />
+    <link rel="sitemap" href={root + 'sitemap-index.xml'} />
+
+    <meta property="og:type" content={ogType} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:site_name" content="Jon Wolf" />
+    <meta property="og:image" content="https://jonwolfnj.com/images/logo.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    {jsonLd.map((block) => (
+      <script type="application/ld+json" set:html={JSON.stringify(block)} />
+    ))}
+
+    <!-- Netlify Identity (Decap CMS auth) -->
+    <script is:inline src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+
+    <!-- Google tag (gtag.js) -->
+    <script is:inline async src="https://www.googletagmanager.com/gtag/js?id=G-1T5CBND79X"></script>
+    <script is:inline>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-1T5CBND79X');
+    </script>
+  </head>
+
+  <body data-world={world}>
+    <div class="followspot" aria-hidden="true"></div>
+
+    <header class="site-header">
+      <div class="container site-header__inner">
+        <a class="brand" href={root} aria-label="Jon Wolf — home">
+          <img src={root + 'images/logo.png'} alt="Jon Wolf" width="689" height="113" />
+        </a>
+
+        <button class="nav-toggle" aria-expanded="false" aria-controls="site-nav">MENU</button>
+
+        <nav class="site-nav" id="site-nav" aria-label="Main">
+          <ul class="site-nav__list">
+            {navItems.map((item) => (
+              <li>
+                <a
+                  class="site-nav__link"
+                  href={root + item.href}
+                  aria-current={isCurrent(item.href) ? 'page' : undefined}
+                >
+                  {item.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main">
+      <slot />
+    </main>
+
+    <footer class="site-footer">
+      <div class="container">
+        <div class="site-footer__grid">
+          <div>
+            <h2>JON WOLF</h2>
+            <p class="lede" style="font-size: 1rem;">
+              Keys on stage. Code off it. North Jersey.
+            </p>
+            <p class="mono" style="margin-top: 1rem;">
+              <a href="mailto:jonwolf@livewebstudios.com">jonwolf@livewebstudios.com</a>
+            </p>
+          </div>
+
+          <div>
+            <h2>THE STAGE</h2>
+            <ul class="site-footer__links">
+              <li><a href={root + 'music/'}>MUSIC</a></li>
+              <li><a href={root + 'shows/'}>SHOWS</a></li>
+              <li><a href="https://britishinvasionyears.com" rel="noopener">THE BRITISH INVASION YEARS</a></li>
+            </ul>
+          </div>
+
+          <div>
+            <h2>THE STUDIO</h2>
+            <ul class="site-footer__links">
+              <li><a href={root + 'web-ai/'}>WEB + AI</a></li>
+              <li><a href={root + 'notes/'}>NOTES</a></li>
+              <li><a href={root + 'about/'}>ABOUT</a></li>
+              <li><a href={root + 'contact/'}>CONTACT</a></li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="site-footer__meta">
+          <p>&copy; {new Date().getFullYear()} Jon Wolf. All rights reserved.</p>
+          <p>Built by <a href="https://livewebstudios.com" rel="noopener">Live Web Studios</a></p>
+          <a class="site-footer__badge" href="https://livewebstudios.com" rel="noopener">
+            <img
+              src={root + 'images/verifiedsecured.png'}
+              alt="Verified & Secured by Live Web Studios"
+              width="150"
+              height="37"
+              loading="lazy"
+            />
+          </a>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      // ---- Mobile nav ----
+      const toggle = document.querySelector('.nav-toggle');
+      const nav = document.getElementById('site-nav');
+      toggle?.addEventListener('click', () => {
+        const open = nav?.classList.toggle('is-open');
+        toggle.setAttribute('aria-expanded', String(Boolean(open)));
+      });
+
+      // ---- Scroll reveals: fade + 12px rise, once ----
+      const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const revealEls = document.querySelectorAll('.reveal');
+      if (reduced || !('IntersectionObserver' in window)) {
+        revealEls.forEach((el) => el.classList.add('is-in'));
+      } else {
+        const io = new IntersectionObserver(
+          (entries) => {
+            for (const entry of entries) {
+              if (entry.isIntersecting) {
+                entry.target.classList.add('is-in');
+                io.unobserve(entry.target);
+              }
+            }
+          },
+          { threshold: 0.15, rootMargin: '0px 0px -5% 0px' }
+        );
+        revealEls.forEach((el) => io.observe(el));
+      }
+
+      // ---- Follow-spot cursor ----
+      // A lazy operator chasing a performer: lerp toward the pointer, never snap.
+      const spot = document.querySelector<HTMLElement>('.followspot');
+      const canHover = window.matchMedia('(hover: hover)').matches;
+
+      if (spot && canHover && !reduced) {
+        const WORLD_COLORS: Record<string, string> = {
+          music: '#F2A33C',
+          web: '#3FB6E8',
+        };
+
+        let targetX = window.innerWidth / 2;
+        let targetY = window.innerHeight / 2;
+        let x = targetX;
+        let y = targetY;
+        let scale = 1;
+        let targetScale = 1;
+        let running = false;
+
+        const tick = () => {
+          x += (targetX - x) * 0.12;
+          y += (targetY - y) * 0.12;
+          scale += (targetScale - scale) * 0.12;
+          spot.style.transform = `translate3d(${x}px, ${y}px, 0) scale(${scale})`;
+          if (Math.abs(targetX - x) > 0.1 || Math.abs(targetY - y) > 0.1 || Math.abs(targetScale - scale) > 0.001) {
+            requestAnimationFrame(tick);
+          } else {
+            running = false;
+          }
+        };
+
+        const wake = () => {
+          if (!running) {
+            running = true;
+            requestAnimationFrame(tick);
+          }
+        };
+
+        document.addEventListener('mousemove', (e) => {
+          targetX = e.clientX;
+          targetY = e.clientY;
+          spot.classList.add('is-on');
+
+          // World detection: which light is this content under?
+          const el = e.target instanceof Element ? e.target : null;
+          const worldEl = el?.closest('[data-world]');
+          const world = worldEl?.getAttribute('data-world') ?? 'music';
+          spot.style.setProperty('--spot-color', WORLD_COLORS[world] ?? WORLD_COLORS.music);
+
+          // The spot finds its mark on interactive elements
+          const interactive = el?.closest('a, button, input, select, textarea, summary, [role="button"]');
+          targetScale = interactive ? 0.6 : 1;
+          spot.style.opacity = interactive ? '1' : '';
+
+          wake();
+        });
+
+        document.addEventListener('mouseleave', () => {
+          spot.classList.remove('is-on');
+        });
+      }
+    </script>
+  </body>
+</html>

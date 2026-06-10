@@ -1,0 +1,131 @@
+---
+import Base from '../../layouts/Base.astro';
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'ContactPage',
+    name: 'Contact Jon Wolf',
+    url: 'https://jonwolfnj.com/contact/',
+    mainEntity: {
+      '@type': 'Person',
+      name: 'Jon Wolf',
+      email: 'mailto:jonwolf@livewebstudios.com',
+      url: 'https://jonwolfnj.com/',
+    },
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://jonwolfnj.com/' },
+      { '@type': 'ListItem', position: 2, name: 'Contact', item: 'https://jonwolfnj.com/contact/' },
+    ],
+  },
+];
+---
+
+<Base
+  title="Contact — Jon Wolf"
+  description="Book a show, start a web project, or talk AI workflows. Contact Jon Wolf in North Jersey — one inbox covers all of it."
+  world="music"
+  jsonLd={jsonLd}
+>
+  <article data-world="music">
+    <section class="section page-head">
+      <div class="container">
+        <p class="kicker reveal">ONE INBOX</p>
+        <h1 class="reveal">Let's talk.</h1>
+        <p class="lede reveal" style="margin-top: 1.5rem; max-width: 40rem;">
+          Booking a show, starting a web project, or curious what AI could do for your business —
+          it all lands in the same place.
+        </p>
+      </div>
+    </section>
+
+    <section class="section contact-zone">
+      <div class="container contact-zone__grid">
+        <!-- [JON: replace FORM_ID with the real Formspree form ID before launch] -->
+        <form
+          class="contact-form reveal"
+          action="https://formspree.io/f/FORM_ID"
+          method="POST"
+        >
+          <input type="hidden" name="_next" value="https://jonwolfnj.com/thanks/" />
+
+          <div class="field">
+            <label for="name">Name</label>
+            <input id="name" type="text" name="name" required autocomplete="name" />
+          </div>
+
+          <div class="field">
+            <label for="email">Email</label>
+            <input id="email" type="email" name="email" required autocomplete="email" />
+          </div>
+
+          <div class="field">
+            <label for="topic">What's this about?</label>
+            <select id="topic" name="topic" required>
+              <option value="Booking">Booking</option>
+              <option value="Web project">Web project</option>
+              <option value="AI consulting">AI consulting</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="message">Message</label>
+            <textarea id="message" name="message" required></textarea>
+          </div>
+
+          <button class="btn" type="submit">Send it.</button>
+        </form>
+
+        <aside class="contact-aside reveal">
+          <h2 class="mono-label" style="margin-bottom: 1rem;">PREFER EMAIL?</h2>
+          <p class="mono">
+            <a href="mailto:jonwolf@livewebstudios.com">jonwolf@livewebstudios.com</a>
+          </p>
+          <p style="margin-top: 1.5rem; color: var(--bone-dim); font-size: var(--text-small);">
+            For Live Web Studios business — sites, hosting, SEO — head straight to
+            <a href="https://livewebstudios.com" rel="noopener">livewebstudios.com</a>.
+          </p>
+        </aside>
+      </div>
+    </section>
+  </article>
+</Base>
+
+<style>
+  .page-head { padding-bottom: var(--space-block); }
+
+  .contact-zone { border-top: 1px solid var(--scrim); }
+
+  .contact-zone__grid {
+    display: grid;
+    gap: 3rem;
+    grid-template-columns: 1fr;
+  }
+
+  @media (min-width: 860px) {
+    .contact-zone__grid {
+      grid-template-columns: 1.6fr 1fr;
+      align-items: start;
+    }
+  }
+
+  .contact-form {
+    display: grid;
+    gap: 1.5rem;
+    max-width: 36rem;
+  }
+
+  .contact-form .btn { justify-self: start; }
+
+  .contact-aside {
+    background: var(--stage);
+    border: 1px solid var(--scrim);
+    border-radius: var(--radius);
+    padding: clamp(1.5rem, 3vw, 2.25rem);
+  }
+</style>

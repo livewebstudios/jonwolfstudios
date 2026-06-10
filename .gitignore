@@ -1,0 +1,25 @@
+# Windows
+desktop.ini
+Thumbs.db
+ehthumbs.db
+$RECYCLE.BIN/
+
+# Mac
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Claude Code
+*.log
+.claude/
+
+# Build / deps
+node_modules/
+dist/
+.astro/
+.netlify/
+
+# Local-only project files — never pushed
+INSTRUCTIONS.md
+*.psd
+/logo.png

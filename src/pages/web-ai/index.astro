@@ -1,0 +1,186 @@
+---
+import Base from '../../layouts/Base.astro';
+import { relRoot } from '../../lib/paths';
+
+const root = relRoot(Astro.url.pathname);
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Person',
+    name: 'Jon Wolf',
+    url: 'https://jonwolfnj.com/',
+    jobTitle: ['Web Developer', 'AI Consultant'],
+    description:
+      'Owner of Live Web Studios since 2004. AI workflow consulting for small businesses in New Jersey.',
+    worksFor: {
+      '@type': 'Organization',
+      name: 'Live Web Studios',
+      url: 'https://livewebstudios.com',
+      foundingDate: '2004',
+    },
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://jonwolfnj.com/' },
+      { '@type': 'ListItem', position: 2, name: 'Web + AI', item: 'https://jonwolfnj.com/web-ai/' },
+    ],
+  },
+];
+---
+
+<Base
+  title="Web & AI — Jon Wolf, AI Consultant in New Jersey"
+  description="20+ years building the web through Live Web Studios — now designing AI workflows for small businesses. AI consulting in New Jersey by someone who ships."
+  world="web"
+  jsonLd={jsonLd}
+>
+  <article data-world="web">
+    <!-- INTRO -->
+    <section class="section page-head">
+      <div class="container">
+        <p class="kicker reveal">THE STUDIO</p>
+        <h1 class="reveal">Twenty years building the web. Now building what's next.</h1>
+        <p class="lede reveal" style="margin-top: 1.5rem; max-width: 44rem;">
+          The other half of the double life: websites, hosting, SEO — and lately, AI workflows that
+          actually save businesses time instead of just impressing them in a demo.
+        </p>
+      </div>
+    </section>
+
+    <!-- LWS -->
+    <section class="section lws">
+      <div class="container">
+        <p class="kicker reveal">SINCE 2004</p>
+        <h2 class="reveal">Live Web Studios</h2>
+        <div class="lws__body">
+          <p class="reveal">
+            I've owned and run Live Web Studios since 2004 — web design, development, hosting, and
+            SEO for businesses that need their site to work as hard as they do. Two decades of
+            launches, migrations, and redesigns, all under one roof.
+          </p>
+          <p class="reveal">
+            Business inquiries belong over there:
+            <a href="https://livewebstudios.com" rel="noopener">livewebstudios.com</a>. This page is
+            the short version — the agency site has the full story, the services, and the door.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- AI CONSULTING -->
+    <section class="section ai">
+      <div class="container">
+        <p class="kicker reveal">THE NEW INSTRUMENT</p>
+        <h2 class="reveal">AI workflows for real businesses.</h2>
+        <div class="ai__body">
+          <p class="reveal">
+            The current exploration: AI consulting and AI workflow design — helping small
+            businesses figure out where AI genuinely fits in their operations, and teaching teams
+            to use the tooling without the hype.
+          </p>
+          <div class="reveal placeholder-note">
+            [JON: confirm positioning — offer scope, target clients, and whether this books through
+            LWS or direct.]
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- HOW I WORK -->
+    <section class="section stack">
+      <div class="container">
+        <p class="kicker reveal">HOW I WORK</p>
+        <h2 class="reveal" style="margin-bottom: 2rem;">Practicing what gets sold.</h2>
+        <ul class="stack__grid">
+          <li class="card reveal">
+            <h3 class="mono stack__name">CLAUDE</h3>
+            <p class="stack__desc">AI pair-builder in the daily workflow — including this site.</p>
+          </li>
+          <li class="card reveal">
+            <h3 class="mono stack__name">GITHUB</h3>
+            <p class="stack__desc">Every project versioned, every change accountable.</p>
+          </li>
+          <li class="card reveal">
+            <h3 class="mono stack__name">NETLIFY</h3>
+            <p class="stack__desc">Push to deploy. Modern hosting without the ceremony.</p>
+          </li>
+          <li class="card reveal">
+            <h3 class="mono stack__name">ASTRO</h3>
+            <p class="stack__desc">Fast static sites that ship zero JavaScript by default.</p>
+          </li>
+        </ul>
+        <p class="reveal" style="margin-top: 2rem; color: var(--bone-dim);">
+          This site runs on that exact stack. The proof loads in under a second.
+        </p>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="section web-cta">
+      <div class="container web-cta__inner reveal">
+        <h2>Wondering what AI could do for your business?</h2>
+        <p class="lede">That's exactly the conversation I'm having right now.</p>
+        <a class="btn" href={root + 'contact/'}>We should talk about this.</a>
+      </div>
+    </section>
+  </article>
+</Base>
+
+<style>
+  .page-head { padding-bottom: var(--space-block); }
+
+  .lws { border-top: 1px solid var(--scrim); }
+
+  .lws__body,
+  .ai__body {
+    margin-top: 1.5rem;
+    display: grid;
+    gap: 1.25rem;
+    max-width: 42rem;
+  }
+
+  .ai { border-top: 1px solid var(--scrim); }
+
+  .stack { border-top: 1px solid var(--scrim); }
+
+  .stack__grid {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: 1.25rem;
+    grid-template-columns: 1fr;
+  }
+
+  @media (min-width: 640px) {
+    .stack__grid { grid-template-columns: 1fr 1fr; }
+  }
+
+  @media (min-width: 1000px) {
+    .stack__grid { grid-template-columns: repeat(4, 1fr); }
+  }
+
+  .stack__name {
+    color: var(--accent);
+    letter-spacing: 0.16em;
+    font-size: var(--text-small);
+    margin-bottom: 0.75rem;
+  }
+
+  .stack__desc {
+    color: var(--bone-dim);
+    font-size: var(--text-small);
+  }
+
+  .web-cta { border-top: 1px solid var(--scrim); }
+
+  .web-cta__inner {
+    text-align: center;
+    display: grid;
+    justify-items: center;
+    gap: 1.25rem;
+    padding-block: clamp(2rem, 5vw, 4rem);
+  }
+</style>

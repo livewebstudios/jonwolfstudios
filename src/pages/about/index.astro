@@ -1,0 +1,195 @@
+---
+import Base from '../../layouts/Base.astro';
+import { relRoot } from '../../lib/paths';
+
+const root = relRoot(Astro.url.pathname);
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'AboutPage',
+    name: 'About Jon Wolf',
+    url: 'https://jonwolfnj.com/about/',
+    mainEntity: {
+      '@type': 'Person',
+      name: 'Jon Wolf',
+      url: 'https://jonwolfnj.com/',
+      jobTitle: ['Musician', 'Web Developer', 'AI Consultant'],
+    },
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://jonwolfnj.com/' },
+      { '@type': 'ListItem', position: 2, name: 'About', item: 'https://jonwolfnj.com/about/' },
+    ],
+  },
+];
+---
+
+<Base
+  title="About — Jon Wolf"
+  description="The dual life of Jon Wolf: North Jersey keyboardist and guitarist with The British Invasion Years, and owner of Live Web Studios since 2004."
+  world="music"
+  jsonLd={jsonLd}
+>
+  <article data-world="music">
+    <section class="section page-head">
+      <div class="container">
+        <p class="kicker reveal">THE DUAL LIFE</p>
+        <h1 class="reveal">About Jon</h1>
+      </div>
+    </section>
+
+    <section class="section bio">
+      <div class="container bio__grid">
+        <div class="bio__photo reveal">
+          <div class="bio__photo-frame">
+            <p class="mono-label">PHOTO</p>
+            <p class="placeholder-note" style="border: none; background: none; padding: 0.5rem 0 0;">
+              [JON: provide — one real photo. No stand-ins, no AI Jon.]
+            </p>
+          </div>
+        </div>
+
+        <div class="bio__text">
+          <p class="reveal">
+            I've spent my whole working life doing two jobs that people insist are opposites.
+          </p>
+          <p class="reveal">
+            On weekends I'm a performing keyboardist and guitarist — piano, keys, electric guitar,
+            some acoustic when the set wants it. Most of that time goes to
+            <a href="https://britishinvasionyears.com" rel="noopener">The British Invasion Years</a>,
+            a touring Beatles and British Invasion era show where I'm a member and one of the people
+            who keeps the machine running. I also write and maintain the band's multi-voice harmony
+            charts — if the vocals lock in just right on a chorus, there's a decent chance that
+            arrangement came off my desk. <span class="placeholder-note" style="display:inline; padding: 0.1rem 0.5rem;">[JON: verify — years with BIY, how you joined]</span>
+          </p>
+          <p class="reveal">
+            The rest of the week I run <a href="https://livewebstudios.com" rel="noopener">Live Web
+            Studios</a>, the web design and development studio I've owned since 2004. Twenty-plus
+            years of building, hosting, and ranking websites for businesses across
+            <span class="placeholder-note" style="display:inline; padding: 0.1rem 0.5rem;">[JON: verify — client regions/industries]</span>.
+            Lately that work has a new layer: AI consulting — helping businesses design AI
+            workflows that actually fit how they operate.
+          </p>
+          <p class="reveal">
+            The two jobs feed each other more than you'd think. A live rig is a system that cannot
+            fail at 9 PM on a Saturday — that's just production engineering with stage lights. And a
+            good website, like a good arrangement, is mostly about knowing what to leave out.
+          </p>
+          <p class="reveal">
+            Based in North Jersey. Reachable at
+            <a href="mailto:jonwolf@livewebstudios.com">jonwolf@livewebstudios.com</a>.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- MINI TECH RIDER -->
+    <section class="section mini-rider" data-world="web">
+      <div class="container">
+        <p class="kicker reveal">APPENDIX</p>
+        <div class="mini-rider__grid">
+          <div class="reveal">
+            <h2 class="mini-rider__h">THE STAGE — MINI RIDER</h2>
+            <ul class="mono mini-rider__list">
+              <li>Apple MainStage · MacBook Pro M4 Pro 48GB (fly-in rig)</li>
+              <li>Korg Kronos + Nord Electro 5 (regional shows)</li>
+              <li>Synthogy Ivory Upright · EastWest Hollywood Opus · NI Komplete 15</li>
+              <li>Electric guitar, some acoustic</li>
+            </ul>
+          </div>
+          <div class="reveal">
+            <h2 class="mini-rider__h">THE STUDIO — TOOLS</h2>
+            <ul class="mono mini-rider__list">
+              <li>Claude · GitHub · Netlify · Astro</li>
+              <li>Web design, development, hosting, SEO since 2004</li>
+              <li>AI workflow design for small businesses</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+  </article>
+</Base>
+
+<style>
+  .page-head { padding-bottom: var(--space-block); }
+
+  .bio { border-top: 1px solid var(--scrim); }
+
+  .bio__grid {
+    display: grid;
+    gap: 2.5rem;
+    grid-template-columns: 1fr;
+  }
+
+  @media (min-width: 860px) {
+    .bio__grid {
+      grid-template-columns: 1fr 1.6fr;
+      align-items: start;
+    }
+  }
+
+  .bio__photo-frame {
+    aspect-ratio: 4 / 5;
+    background: var(--stage);
+    border: 1px solid var(--scrim);
+    border-radius: var(--radius);
+    display: grid;
+    place-content: center;
+    text-align: center;
+    padding: 2rem;
+  }
+
+  .bio__text {
+    display: grid;
+    gap: 1.25rem;
+    max-width: 42rem;
+  }
+
+  .mini-rider { border-top: 1px solid var(--scrim); }
+
+  .mini-rider__grid {
+    display: grid;
+    gap: 2.5rem;
+    grid-template-columns: 1fr;
+    margin-top: 1.5rem;
+  }
+
+  @media (min-width: 760px) {
+    .mini-rider__grid { grid-template-columns: 1fr 1fr; }
+  }
+
+  .mini-rider__h {
+    font-family: var(--font-mono);
+    font-size: var(--text-micro);
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    color: var(--accent);
+    margin-bottom: 1rem;
+  }
+
+  .mini-rider__list {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: 0.6rem;
+    color: var(--bone-dim);
+    font-size: var(--text-small);
+  }
+
+  .mini-rider__list li {
+    padding-left: 1.25rem;
+    position: relative;
+  }
+
+  .mini-rider__list li::before {
+    content: '·';
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+  }
+</style>

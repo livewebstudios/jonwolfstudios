@@ -1,0 +1,39 @@
+---
+import Base from '../../layouts/Base.astro';
+import { relRoot } from '../../lib/paths';
+
+const root = relRoot(Astro.url.pathname);
+---
+
+<Base
+  title="Message Received — Jon Wolf"
+  description="Your message is in. Jon Wolf will get back to you soon — usually faster than a soundcheck runs long."
+  world="music"
+>
+  <section class="section thanks" data-world="music">
+    <div class="container thanks__inner">
+      <p class="kicker reveal">MESSAGE RECEIVED</p>
+      <h1 class="reveal">Got it. You'll hear back soon.</h1>
+      <p class="lede reveal" style="margin-top: 1.5rem;">
+        Your message landed in the inbox. While you wait, the rest of the site isn't going anywhere.
+      </p>
+      <div class="thanks__ctas reveal">
+        <a class="btn" href={root}>Back Home</a>
+        <a class="btn btn--ghost" href={root + 'notes/'}>Read the Notes</a>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .thanks { min-height: 55svh; display: grid; align-items: center; }
+
+  .thanks__inner { max-width: 44rem; }
+
+  .thanks__ctas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-top: 2.5rem;
+  }
+</style>
