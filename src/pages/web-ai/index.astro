@@ -163,30 +163,30 @@ const jsonLd = [
 
         <p class="kicker reveal" style="margin-top: 3rem;">AND WHAT IT BUILDS</p>
         <ul class="stack__grid stack__grid--image">
-          <li class="icard reveal" style={`background-image: url('${root}images/atmos/card-design.jpg')`}>
-            <div class="icard__body">
-              <h3 class="mono icard__name">DESIGN</h3>
-              <p class="icard__desc">Sites built to convert, not just to look good.</p>
-            </div>
-          </li>
-          <li class="icard reveal" style={`background-image: url('${root}images/atmos/card-seo.jpg')`}>
-            <div class="icard__body">
-              <h3 class="mono icard__name">SEO</h3>
-              <p class="icard__desc">Found on Google for the terms that actually pay.</p>
-            </div>
-          </li>
-          <li class="icard reveal" style={`background-image: url('${root}images/atmos/card-hosting.jpg')`}>
-            <div class="icard__body">
-              <h3 class="mono icard__name">HOSTING</h3>
-              <p class="icard__desc">Fast, secure, and watched — since 2004.</p>
-            </div>
-          </li>
-          <li class="icard reveal" style={`background-image: url('${root}images/atmos/card-automation.jpg')`}>
-            <div class="icard__body">
-              <h3 class="mono icard__name">AUTOMATION</h3>
-              <p class="icard__desc">The busywork, handed off to the machines.</p>
-            </div>
-          </li>
+          {
+            [
+              { slug: 'design', name: 'DESIGN', desc: 'Sites built to convert, not just to look good.' },
+              { slug: 'seo', name: 'SEO', desc: 'Found on Google for the terms that actually pay.' },
+              { slug: 'hosting', name: 'HOSTING', desc: 'Fast, secure, and watched — since 2004.' },
+              { slug: 'automation', name: 'AUTOMATION', desc: 'The busywork, handed off to the machines.' },
+            ].map((c) => (
+              <li class="icard reveal" style={`background-image: url('${root}images/atmos/card-${c.slug}.jpg')`}>
+                <video
+                  class="icard__video"
+                  muted
+                  loop
+                  playsinline
+                  preload="none"
+                  poster={`${root}images/atmos/card-${c.slug}.jpg`}
+                  data-src={`${root}images/atmos/cards/card-${c.slug}.mp4`}
+                ></video>
+                <div class="icard__body">
+                  <h3 class="mono icard__name">{c.name}</h3>
+                  <p class="icard__desc">{c.desc}</p>
+                </div>
+              </li>
+            ))
+          }
         </ul>
         <p class="reveal" style="margin-top: 2rem; color: var(--bone-dim);">
           This site runs on that exact stack. The proof loads in under a second.
@@ -204,6 +204,37 @@ const jsonLd = [
     </section>
   </article>
 </Base>
+
+<script>
+  // Industry cards: load each looping video only when it scrolls near view,
+  // and never on reduced-motion or save-data. The static poster carries it
+  // otherwise — no 7MB hit on page load.
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const conn = (navigator as { connection?: { saveData?: boolean } }).connection;
+  const saveData = Boolean(conn?.saveData);
+
+  if (!reduced && !saveData && 'IntersectionObserver' in window) {
+    const io = new IntersectionObserver(
+      (entries, obs) => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue;
+          const video = entry.target as HTMLVideoElement;
+          const src = video.dataset.src;
+          if (src && !video.src) {
+            video.src = src;
+            video.addEventListener('canplay', () => video.classList.add('is-playing'), { once: true });
+            video.play().catch(() => {
+              /* autoplay denied — poster carries the card */
+            });
+          }
+          obs.unobserve(video);
+        }
+      },
+      { rootMargin: '200px 0px' }
+    );
+    document.querySelectorAll<HTMLVideoElement>('.icard__video').forEach((v) => io.observe(v));
+  }
+</script>
 
 <style>
   .page-head {
@@ -359,11 +390,25 @@ const jsonLd = [
     transition: transform 0.3s var(--ease-out), border-color 0.3s var(--ease-out);
   }
 
-  /* Scrim keeps the words readable over any image (WCAG AA) */
+  .icard__video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;
+    opacity: 0;
+    transition: opacity 0.8s var(--ease-out);
+  }
+
+  .icard__video.is-playing { opacity: 1; }
+
+  /* Scrim keeps the words readable over any image or video (WCAG AA) */
   .icard::before {
     content: '';
     position: absolute;
     inset: 0;
+    z-index: 1;
     background: linear-gradient(
       0deg,
       color-mix(in srgb, var(--ink) 94%, transparent) 0%,
@@ -379,7 +424,7 @@ const jsonLd = [
 
   .icard__body {
     position: relative;
-    z-index: 1;
+    z-index: 2;
     padding: 1.25rem;
   }
 
