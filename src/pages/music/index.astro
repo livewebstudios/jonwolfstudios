@@ -48,7 +48,7 @@ const jsonLd = [
         <h1 class="reveal">Performing keyboardist &amp; guitarist.</h1>
         <p class="lede reveal" style="margin-top: 1.5rem; max-width: 42rem;">
           Piano, keyboards, and electric guitar — with some acoustic when the set calls for it.
-          I'm based in North Jersey and play stages well beyond it. The job is making the band
+          Jon is based in North Jersey and plays stages well beyond it. The job is making the band
           sound bigger than its headcount: covering the orchestration, holding down the harmony,
           and showing up with a rig that never blinks.
         </p>
@@ -61,15 +61,15 @@ const jsonLd = [
         <p class="kicker reveal">THE RIG</p>
         <h2 class="reveal" style="margin-bottom: 2rem;">What's on stage.</h2>
         <div class="reveal">
-          <RigExplorer client:visible />
+          <RigExplorer client:visible pedalboardSrc={root + 'images/gear/pedalboard.jpg'} />
         </div>
       </div>
     </section>
 
     <!-- BRITISH INVASION YEARS -->
-    <section class="section">
-      <div class="bg-layer" aria-hidden="true">
-        <img src={root + 'images/atmos/shows-theater.jpg'} alt="" loading="lazy" width="1600" height="893" />
+    <section class="section biy" data-world="music">
+      <div class="bg-layer bg-layer--bright" aria-hidden="true">
+        <img src={root + 'images/jon/hippie.jpg'} alt="" loading="lazy" width="1100" height="1100" />
       </div>
       <div class="container">
         <p class="kicker reveal">THE BAND</p>
@@ -77,13 +77,13 @@ const jsonLd = [
         <div class="biy__body">
           <p class="reveal">
             A touring tribute to the Beatles and the British Invasion era — the songs that crossed
-            the Atlantic in the sixties and never left. I'm a member and one of the show's key
-            organizers; we're booked through Blue Raven Entertainment.
+            the Atlantic in the sixties and never left. Jon is a member and one of the show's key
+            organizers; the band is booked through Blue Raven Entertainment.
           </p>
           <p class="reveal">
-            My quiet specialty: the vocal harmonies. I create and maintain the band's multi-voice
-            harmony charts — the arrangements that keep the voices locked where the records put
-            them. It's the kind of work the audience never sees and always hears.
+            His quiet specialty: the vocal harmonies. Jon creates and maintains the band's
+            multi-voice harmony charts — the arrangements that keep the voices locked where the
+            records put them. It's the kind of work the audience never sees and always hears.
           </p>
           <p class="reveal mono">
             <a href="https://britishinvasionyears.com" rel="noopener">britishinvasionyears.com →</a>
@@ -97,15 +97,15 @@ const jsonLd = [
       <div class="container">
         <p class="kicker reveal">MEDIA</p>
         <h2 class="reveal" style="margin-bottom: 2rem;">On stage, in pixels.</h2>
-        <!-- PLACEHOLDER: replace these atmosphere stills with real live shots / BIY footage from Jon -->
+        <!-- PLACEHOLDER: more live shots / BIY video embeds welcome — grid scales to fit -->
         <div class="media-grid">
           <figure class="media-grid__item media-grid__item--wide reveal">
             <img src={root + 'images/atmos/music-rig.jpg'} alt="Multi-keyboard live rig in concert haze under amber and blue stage light" loading="lazy" width="1600" height="893" />
             <figcaption class="mono-label">THE RIG, IN ITS NATURAL HABITAT</figcaption>
           </figure>
           <figure class="media-grid__item reveal">
-            <img src={root + 'images/atmos/door-stage-hands.jpg'} alt="Hands on keyboard keys under warm stage light" loading="lazy" width="1195" height="1600" />
-            <figcaption class="mono-label">KEYS UNDER TUNGSTEN</figcaption>
+            <img src={root + 'images/jon/darkkeys.jpg'} alt="Jon Wolf playing keyboards live on a darkened stage" loading="lazy" width="1000" height="1000" />
+            <figcaption class="mono-label">LIVE AT THE KEYS</figcaption>
           </figure>
           <figure class="media-grid__item reveal">
             <img src={root + 'images/atmos/about-hammers.jpg'} alt="Piano hammers and strings inside an open grand piano" loading="lazy" width="1600" height="893" />
@@ -302,5 +302,14 @@ const jsonLd = [
     color: var(--bone-dim);
     font-size: var(--text-small);
     max-width: 50ch;
+  }
+
+  .rig__image {
+    width: 100%;
+    margin-top: 1.5rem;
+    border: 1px solid var(--scrim);
+    border-radius: var(--radius);
+    aspect-ratio: 16 / 7;
+    object-fit: cover;
   }
 </style>

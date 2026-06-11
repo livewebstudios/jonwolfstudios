@@ -167,6 +167,17 @@ a:hover {
       color-mix(in srgb, var(--ink) 55%, transparent) 70%, var(--ink) 100%);
 }
 
+/* Brighter variant — image reads clearly; text side kept dark for contrast */
+.bg-layer--bright img { opacity: 0.82; }
+
+.bg-layer--bright::after {
+  background:
+    linear-gradient(90deg, color-mix(in srgb, var(--ink) 90%, transparent) 0%,
+      color-mix(in srgb, var(--ink) 35%, transparent) 58%, transparent 100%),
+    linear-gradient(0deg, var(--ink) 0%, transparent 42%),
+    linear-gradient(180deg, var(--ink) 0%, transparent 22%);
+}
+
 .section > .container { position: relative; z-index: 1; }
 
 /* Mono kicker label — the "tech rider" voice */
@@ -447,8 +458,12 @@ a:hover {
   grid-template-columns: 1fr;
 }
 
-@media (min-width: 700px) {
-  .site-footer__grid { grid-template-columns: 1.4fr 1fr 1fr; }
+@media (min-width: 560px) {
+  .site-footer__grid { grid-template-columns: 1fr 1fr; }
+}
+
+@media (min-width: 900px) {
+  .site-footer__grid { grid-template-columns: 1.5fr 1fr 1fr 1.2fr; }
 }
 
 .site-footer h2 {

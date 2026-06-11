@@ -10,7 +10,9 @@ export function getStaticPaths() {
 
 const { post } = Astro.props;
 const root = relRoot(Astro.url.pathname);
-const html = marked.parse(post.body);
+// Rewrite root-relative internal links (e.g. /contact/) to the page's relative
+// prefix so shipped HTML follows the LWS relative-path rule.
+const html = (marked.parse(post.body) as string).replace(/href="\/(?!\/)/g, `href="${root}`);
 
 const jsonLd = [
   {
@@ -77,13 +79,77 @@ const jsonLd = [
 
   .post-body__prose {
     max-width: 42rem;
-    display: grid;
-    gap: 1.25rem;
+    font-size: 1.075rem;
+    line-height: 1.7;
   }
 
-  .post-body__prose :global(h2),
+  .post-body__prose :global(p),
+  .post-body__prose :global(ul),
+  .post-body__prose :global(ol) {
+    margin-block: 1.1rem;
+  }
+
+  .post-body__prose :global(h2) {
+    font-size: clamp(1.4rem, 2.4vw, 1.75rem);
+    margin-top: 2.5rem;
+    margin-bottom: 0.5rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--scrim);
+  }
+
   .post-body__prose :global(h3) {
-    margin-top: 1.25rem;
+    font-size: 1.2rem;
+    margin-top: 1.75rem;
+    margin-bottom: 0.4rem;
+  }
+
+  .post-body__prose :global(ul),
+  .post-body__prose :global(ol) {
+    padding-left: 0;
+    list-style: none;
+    display: grid;
+    gap: 0.7rem;
+  }
+
+  .post-body__prose :global(li) {
+    position: relative;
+    padding-left: 1.6rem;
+  }
+
+  .post-body__prose :global(ul li)::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.62em;
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 1px;
+    background: var(--accent);
+    transform: rotate(45deg);
+  }
+
+  .post-body__prose :global(ol) {
+    counter-reset: step;
+  }
+
+  .post-body__prose :global(ol li)::before {
+    counter-increment: step;
+    content: counter(step);
+    position: absolute;
+    left: 0;
+    top: 0;
+    font-family: var(--font-mono);
+    font-size: 0.8em;
+    color: var(--accent);
+  }
+
+  .post-body__prose :global(strong) {
+    color: var(--bone);
+    font-weight: 700;
+  }
+
+  .post-body__prose :global(a) {
+    color: var(--accent);
   }
 
   .post-body__prose :global(code) {
@@ -99,5 +165,8 @@ const jsonLd = [
     border-left: 2px solid var(--accent);
     padding-left: 1.25rem;
     color: var(--bone-dim);
+    font-style: italic;
   }
+
+  .post-body__prose :global(em) { color: var(--bone-dim); }
 </style>
