@@ -46,7 +46,9 @@ const jsonLd = [
       <div class="container bio__grid">
         <div class="bio__photo reveal">
           <figure class="bio__photo-frame">
-            <img src={root + 'images/jon/jon-studio.jpg'} alt="Jon Wolf, North Jersey keyboardist and web developer" loading="lazy" width="1200" height="675" />
+            <button class="lb-trigger" type="button" aria-label="View photo larger">
+              <img src={root + 'images/jon/jon-studio.jpg'} alt="Jon Wolf, North Jersey keyboardist and web developer" loading="lazy" width="1200" height="675" />
+            </button>
             <figcaption class="mono-label">JON WOLF — NORTH JERSEY</figcaption>
           </figure>
         </div>
@@ -58,26 +60,38 @@ const jsonLd = [
           </p>
           <!-- PLACEHOLDER: verify with Jon — years with BIY / how he joined; client regions & industries -->
           <p class="reveal">
-            One is the stage. Jon is a performing keyboardist and guitarist — piano, keys, electric
-            guitar, some acoustic when the set wants it — and he gigs constantly. A lot of that is
+            One is the stage. Jon is a performing keyboardist, guitarist and vocalist — and he gigs
+            constantly. A lot of that is
             <a href="https://britishinvasionyears.com" rel="noopener">The British Invasion Years</a>,
             the touring Beatles and British Invasion era show where he's a member and one of the
             people who keeps the machine running. The road comes in stretches: some runs last weeks
             at a time, and the dates aren't always domestic — wherever the show is booked, Jon goes.
           </p>
+          <figure class="pullquote reveal">
+            <blockquote>
+              <p>
+                “People think music is about talent. It's not. It's about showing up — to rehearsal,
+                to the gig, to the moment when everything falls apart at soundcheck and you fix it
+                anyway.”
+              </p>
+            </blockquote>
+            <figcaption>— JON WOLF</figcaption>
+          </figure>
           <p class="reveal">
-            There's a quieter craft underneath the gig, too. Jon writes and maintains the band's
+            There's a quieter craft underneath the gig, too. Jon assists in laying out the band's
             multi-voice harmony charts — so if the vocals lock in just right on a chorus, there's a
-            decent chance that arrangement came off his desk.
+            decent chance that arrangement crossed his desk.
           </p>
           <p class="reveal">
             The other job is the studio. Between road runs, Jon runs
-            <a href="https://livewebstudios.com" rel="noopener">Live Web Studios</a>, the web design
-            and development shop he's owned since 2004 — two-plus decades of building, hosting, and
-            ranking websites for businesses that need the web to work as hard as they do. Lately
-            that work has a new layer: AI consulting, helping businesses design AI workflows that
-            actually fit how they operate.
+            <a href="https://livewebstudios.com" rel="noopener">Live Web Studios</a> — and the short
+            version of two-plus decades looks like this:
           </p>
+          <ul class="bio__list reveal">
+            <li>Web design, development, hosting, and SEO under one roof since 2004</li>
+            <li>Hundreds of sites built, migrated, and ranked for businesses across the region</li>
+            <li>The newest layer: AI consulting — workflows designed around how a business actually operates, with the team trained to run them</li>
+          </ul>
           <p class="reveal">
             The two jobs feed each other more than you'd think. A live rig is a system that cannot
             fail at 9 PM on a Saturday — that's just production engineering with stage lights. And a
@@ -93,17 +107,33 @@ const jsonLd = [
       <!-- Throwback strip — sprinkle of history, kept small -->
       <div class="container throwback">
         <figure class="throwback__item reveal">
-          <img src={root + 'images/jon/baby.jpg'} alt="Jon Wolf as a toddler at a piano" loading="lazy" width="900" height="900" />
+          <button class="lb-trigger" type="button" aria-label="View photo larger">
+            <img src={root + 'images/jon/baby.jpg'} alt="Jon Wolf as a toddler at a piano" loading="lazy" width="900" height="900" />
+          </button>
           <figcaption class="mono-label">STARTED EARLY</figcaption>
         </figure>
         <figure class="throwback__item reveal">
-          <img src={root + 'images/jon/woodstock.jpg'} alt="A young Jon Wolf playing keyboards" loading="lazy" width="757" height="1099" />
+          <button class="lb-trigger" type="button" aria-label="View photo larger">
+            <img src={root + 'images/jon/woodstock.jpg'} alt="A young Jon Wolf playing keyboards" loading="lazy" width="757" height="1099" />
+          </button>
           <figcaption class="mono-label">STILL AT IT, DECADES LATER</figcaption>
         </figure>
         <figure class="throwback__item reveal">
-          <img src={root + 'images/jon/jon-park-bench.jpg'} alt="Jon Wolf on a park bench in the city" loading="lazy" width="1200" height="900" />
+          <button class="lb-trigger" type="button" aria-label="View photo larger">
+            <img src={root + 'images/jon/jon-park-bench.jpg'} alt="Jon Wolf on a park bench in the city" loading="lazy" width="1200" height="900" />
+          </button>
           <figcaption class="mono-label">OFF THE CLOCK</figcaption>
         </figure>
+      </div>
+
+      <!-- Lightbox — one overlay, filled per click -->
+      <div class="lightbox" id="lightbox" aria-hidden="true">
+        <div class="lightbox__backdrop"></div>
+        <figure class="lightbox__figure">
+          <img class="lightbox__img" alt="" />
+          <figcaption class="lightbox__cap mono-label"></figcaption>
+        </figure>
+        <button class="lightbox__close" type="button" aria-label="Close photo">&times;</button>
       </div>
     </section>
 
@@ -137,6 +167,92 @@ const jsonLd = [
     </section>
   </article>
 </Base>
+
+<script>
+  // Lightbox — FLIP zoom from the clicked thumbnail to center stage.
+  const box = document.getElementById('lightbox')!;
+  const boxImg = box.querySelector<HTMLImageElement>('.lightbox__img')!;
+  const boxCap = box.querySelector<HTMLElement>('.lightbox__cap')!;
+  const closeBtn = box.querySelector<HTMLButtonElement>('.lightbox__close')!;
+  const backdrop = box.querySelector<HTMLElement>('.lightbox__backdrop')!;
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const EASE = 'cubic-bezier(0.22, 1, 0.36, 1)';
+
+  let sourceImg: HTMLImageElement | null = null;
+  let lastFocus: HTMLElement | null = null;
+
+  const flip = (from: DOMRect, to: DOMRect, reverse = false) => {
+    const dx = from.left + from.width / 2 - (to.left + to.width / 2);
+    const dy = from.top + from.height / 2 - (to.top + to.height / 2);
+    const ds = from.width / to.width;
+    const frames = [
+      { transform: `translate(${dx}px, ${dy}px) scale(${ds})` },
+      { transform: 'none' },
+    ];
+    return boxImg.animate(reverse ? frames.reverse() : frames, {
+      duration: 420,
+      easing: EASE,
+    });
+  };
+
+  const open = (trigger: HTMLElement) => {
+    const img = trigger.querySelector('img');
+    if (!img) return;
+    sourceImg = img;
+    lastFocus = trigger;
+
+    boxImg.src = img.currentSrc || img.src;
+    boxImg.alt = img.alt;
+    boxCap.textContent =
+      trigger.closest('figure')?.querySelector('figcaption')?.textContent ?? '';
+
+    box.classList.add('is-open');
+    box.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+    closeBtn.focus();
+
+    if (!reduced) {
+      // clear any forwards-filled fade left over from the last close
+      backdrop.getAnimations().forEach((a) => a.cancel());
+      requestAnimationFrame(() => {
+        flip(img.getBoundingClientRect(), boxImg.getBoundingClientRect());
+        backdrop.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 320, easing: 'ease-out' });
+        boxCap.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 300, delay: 260, fill: 'backwards' });
+      });
+    }
+  };
+
+  const close = () => {
+    const finish = () => {
+      box.classList.remove('is-open');
+      box.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+      lastFocus?.focus();
+    };
+
+    if (reduced || !sourceImg) {
+      finish();
+      return;
+    }
+
+    const anim = flip(sourceImg.getBoundingClientRect(), boxImg.getBoundingClientRect(), true);
+    backdrop.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 320, easing: 'ease-out', fill: 'forwards' });
+    boxCap.style.opacity = '0';
+    anim.addEventListener('finish', () => {
+      boxCap.style.opacity = '';
+      finish();
+    });
+  };
+
+  document.querySelectorAll<HTMLElement>('.lb-trigger').forEach((t) => {
+    t.addEventListener('click', () => open(t));
+  });
+  closeBtn.addEventListener('click', close);
+  backdrop.addEventListener('click', close);
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && box.classList.contains('is-open')) close();
+  });
+</script>
 
 <style>
   .page-head { padding-bottom: var(--space-block); }
@@ -180,6 +296,109 @@ const jsonLd = [
     display: grid;
     gap: 1.25rem;
     max-width: 42rem;
+  }
+
+  .bio__list {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: 0.6rem;
+  }
+
+  .bio__list li {
+    padding-left: 1.25rem;
+    position: relative;
+  }
+
+  .bio__list li::before {
+    content: '·';
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+    font-weight: 700;
+  }
+
+  /* --- Lightbox triggers + overlay --- */
+  .lb-trigger {
+    display: block;
+    width: 100%;
+    padding: 0;
+    margin: 0;
+    border: none;
+    background: none;
+    cursor: zoom-in;
+  }
+
+  .lb-trigger img { transition: transform 0.5s var(--ease-out), opacity 0.5s var(--ease-out); }
+
+  .lb-trigger:hover img,
+  .lb-trigger:focus-visible img { transform: scale(1.025); opacity: 1; }
+
+  .lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 300;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: clamp(1rem, 4vw, 3rem);
+  }
+
+  .lightbox.is-open { display: flex; }
+
+  .lightbox__backdrop {
+    position: absolute;
+    inset: 0;
+    background: color-mix(in srgb, var(--ink) 88%, transparent);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    cursor: zoom-out;
+  }
+
+  .lightbox__figure {
+    position: relative;
+    margin: 0;
+    max-width: min(64rem, 100%);
+    display: grid;
+    gap: 0.85rem;
+    justify-items: center;
+    pointer-events: none;
+  }
+
+  .lightbox__img {
+    max-width: 100%;
+    max-height: 82svh;
+    width: auto;
+    height: auto;
+    border-radius: var(--radius);
+    border: 1px solid var(--scrim);
+    box-shadow: 0 30px 80px -20px rgba(0, 0, 0, 0.8);
+  }
+
+  .lightbox__cap { color: var(--bone-dim); }
+
+  .lightbox__close {
+    position: absolute;
+    top: clamp(0.75rem, 2vw, 1.5rem);
+    right: clamp(0.75rem, 2vw, 1.5rem);
+    width: 2.75rem;
+    height: 2.75rem;
+    display: grid;
+    place-items: center;
+    border: 1px solid var(--scrim);
+    border-radius: 999px;
+    background: var(--stage);
+    color: var(--bone);
+    font-size: 1.5rem;
+    line-height: 1;
+    cursor: pointer;
+    transition: color 0.25s var(--ease-out), border-color 0.25s var(--ease-out), transform 0.25s var(--ease-out);
+  }
+
+  .lightbox__close:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+    transform: rotate(90deg);
   }
 
   .throwback {

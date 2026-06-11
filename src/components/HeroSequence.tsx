@@ -99,24 +99,21 @@ export default function HeroSequence({ root }: Props) {
         </span>
       </p>
 
-      <h1 className="hero__title">
+      <h1 className="hero__title hero__title--tagline">
         <motion.span className="hero__line" initial={false} animate={lineAnim(0)}>
-          Jon Wolf —
+          By day, <span className="hl-web">WEBSITES</span>.
         </motion.span>
-        <motion.span className="hero__line hero__line--music" initial={false} animate={lineAnim(1)}>
-          keys on stage,
-        </motion.span>
-        <motion.span className="hero__line hero__line--web" initial={false} animate={lineAnim(2)}>
-          code off it.
+        <motion.span className="hero__line" initial={false} animate={lineAnim(1)}>
+          By night, <span className="hl-music">SETLISTS</span>.
         </motion.span>
       </h1>
 
-      <motion.p className="lede hero__lede" initial={false} animate={lineAnim(3)}>
+      <motion.p className="lede hero__lede" initial={false} animate={lineAnim(2)}>
         Performing keyboardist &amp; guitarist with The British Invasion Years. Owner of Live Web
         Studios since 2004. Now building AI workflows for businesses that want in.
       </motion.p>
 
-      <motion.div className="hero__ctas" initial={false} animate={lineAnim(4)}>
+      <motion.div className="hero__ctas" initial={false} animate={lineAnim(3)}>
         <a className="btn" href={root + 'music/'}>
           The Stage
         </a>

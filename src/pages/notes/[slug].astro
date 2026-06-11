@@ -43,6 +43,7 @@ const jsonLd = [
   description={post.excerpt}
   world={post.tag}
   ogType="article"
+  ogImage={post.image ? `https://jonwolfnj.com/${post.image}` : undefined}
   jsonLd={jsonLd}
 >
   <article data-world={post.tag}>
@@ -53,6 +54,22 @@ const jsonLd = [
         <p class="mono post-head__date reveal">{formatPostDate(post.date)}</p>
       </div>
     </section>
+
+    {post.image && (
+      <section class="post-hero">
+        <div class="container">
+          <figure class="post-hero__frame reveal">
+            <img
+              src={root + post.image}
+              alt={post.imageAlt ?? ''}
+              width="1600"
+              height="900"
+              fetchpriority="high"
+            />
+          </figure>
+        </div>
+      </section>
+    )}
 
     <section class="section post-body">
       <div class="container">
@@ -75,7 +92,21 @@ const jsonLd = [
     letter-spacing: 0.12em;
   }
 
-  .post-body { border-top: 1px solid var(--scrim); }
+  .post-hero__frame {
+    margin: 0;
+    border: 1px solid var(--scrim);
+    border-radius: var(--radius);
+    overflow: hidden;
+    background: var(--stage);
+  }
+
+  .post-hero__frame img {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+  }
+
+  .post-body { border-top: 1px solid var(--scrim); margin-top: var(--space-block); }
 
   .post-body__prose {
     max-width: 42rem;

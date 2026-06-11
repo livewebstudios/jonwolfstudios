@@ -10,7 +10,7 @@
   --stage:      #1E1A28;
   --scrim:      #2A2438;
   --bone:       #EDE7DC;
-  --bone-dim:   #A39D92;
+  --bone-dim:   #BCB6AA;
   --tungsten:   #F2A33C;
   --gel:        #E4543F;
   --signal:     #3FB6E8;
@@ -23,6 +23,7 @@
   --font-display: 'Bricolage Grotesque Variable', system-ui, sans-serif;
   --font-body: 'Albert Sans Variable', system-ui, sans-serif;
   --font-mono: 'JetBrains Mono Variable', ui-monospace, monospace;
+  --font-accent: 'Syne Variable', system-ui, sans-serif;
 
   /* Fluid scale */
   --text-hero: clamp(2.25rem, 5.5vw, 4.25rem);
@@ -36,8 +37,8 @@
   /* Rhythm — tightened ~35% from wireframe rev */
   --space-section: clamp(3rem, 7vw, 5rem);
   --space-block: clamp(1.5rem, 3vw, 2.25rem);
-  --container: 72rem;
-  --gutter: clamp(1.25rem, 4vw, 2.5rem);
+  --container: 64rem;
+  --gutter: clamp(1.25rem, 4vw, 3rem);
 
   --radius: 10px;
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
@@ -268,7 +269,7 @@ a:hover {
   position: sticky;
   top: 0;
   z-index: 100;
-  background: color-mix(in srgb, var(--ink) 82%, transparent);
+  background: color-mix(in srgb, var(--ink) 68%, transparent);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   border-bottom: 1px solid var(--scrim);
@@ -436,7 +437,7 @@ a:hover {
 .site-footer {
   border-top: none;
   background: var(--stage);
-  padding-block: 3rem 2.25rem;
+  padding-block: 0 2.25rem;
   margin-top: var(--space-section);
   position: relative;
 }
@@ -449,7 +450,98 @@ a:hover {
   left: 0;
   right: 0;
   height: 2px;
-  background: linear-gradient(90deg, var(--tungsten), var(--gel) 35%, var(--signal));
+  background: linear-gradient(90deg, var(--signal), var(--gel) 65%, var(--tungsten));
+  z-index: 1;
+}
+
+/* --- Footer piano: the page literally ends on a note --- */
+.footer-keys {
+  display: flex;
+  height: 76px;
+  background: var(--ink);
+  border-bottom: 1px solid var(--scrim);
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.fk-white {
+  position: relative;
+  flex: 1;
+  background: linear-gradient(180deg, #191622, #221F2E 80%, #262236);
+  border-right: 1px solid var(--ink);
+  border-radius: 0 0 4px 4px;
+  cursor: pointer;
+  transition: background 0.45s var(--ease-out), box-shadow 0.45s var(--ease-out);
+}
+
+.fk-white:hover {
+  background: linear-gradient(180deg, #1E1A2A, #2A2538);
+}
+
+.fk-white.is-lit {
+  background: linear-gradient(
+    180deg,
+    #221F2E,
+    color-mix(in srgb, var(--k-accent) 38%, #221F2E)
+  );
+  box-shadow: inset 0 -14px 22px -10px var(--k-accent);
+  transition-duration: 0.06s;
+}
+
+.fk-black {
+  position: absolute;
+  top: 0;
+  right: -19%;
+  width: 38%;
+  height: 56%;
+  z-index: 2;
+  background: #0B0911;
+  border-radius: 0 0 3px 3px;
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.55);
+  cursor: pointer;
+  transition: background 0.45s var(--ease-out), box-shadow 0.45s var(--ease-out);
+}
+
+.fk-black.is-lit {
+  background: color-mix(in srgb, var(--k-accent) 30%, #0b0911);
+  box-shadow:
+    0 2px 0 rgba(0, 0, 0, 0.55),
+    inset 0 -8px 14px -6px var(--k-accent);
+  transition-duration: 0.06s;
+}
+
+.footer-keys__hint {
+  margin-block: 0.75rem 1.75rem;
+  text-align: right;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.28em;
+  color: var(--bone-dim);
+  opacity: 0.55;
+}
+
+/* --- Brand block --- */
+.site-footer__brand .footer-sig {
+  display: inline-block;
+  background: none;
+  margin-bottom: 1.25rem;
+}
+
+.footer-place {
+  font-family: var(--font-mono);
+  font-size: var(--text-micro);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--bone-dim);
+  margin-bottom: 0.4rem;
+}
+
+.footer-tagline {
+  font-family: var(--font-mono);
+  font-size: var(--text-micro);
+  letter-spacing: 0.14em;
+  line-height: 1.7;
 }
 
 .site-footer__grid {
@@ -617,7 +709,49 @@ a:hover {
 .hero__line--music { color: var(--tungsten); }
 .hero__line--web { color: var(--signal); }
 
+.hero__title--tagline {
+  font-family: var(--font-accent);
+  font-weight: 700;
+  font-size: clamp(2.4rem, 6vw, 4.6rem);
+  line-height: 1.08;
+  letter-spacing: -0.015em;
+}
+
+.hl-music { color: var(--tungsten); }
+.hl-web { color: var(--signal); }
+
 .hero__lede { max-width: 38rem; }
+
+/* --------------------------------------------------------------------------
+   Pull quotes — Jon's voice, set apart from body copy
+   -------------------------------------------------------------------------- */
+.pullquote {
+  margin: 0;
+  max-width: 40rem;
+  border-left: 2px solid var(--accent);
+  padding-left: clamp(1.25rem, 2.5vw, 1.75rem);
+}
+
+.pullquote blockquote {
+  margin: 0;
+}
+
+.pullquote blockquote p {
+  font-family: var(--font-accent);
+  font-weight: 600;
+  font-size: clamp(1.15rem, 1.9vw, 1.45rem);
+  line-height: 1.45;
+  color: var(--bone);
+  max-width: none;
+}
+
+.pullquote figcaption {
+  margin-top: 0.85rem;
+  font-family: var(--font-mono);
+  font-size: var(--text-micro);
+  letter-spacing: 0.22em;
+  color: var(--accent);
+}
 
 .hero__ctas {
   display: flex;

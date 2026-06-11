@@ -2,8 +2,10 @@
 import '@fontsource-variable/bricolage-grotesque';
 import '@fontsource-variable/albert-sans';
 import '@fontsource-variable/jetbrains-mono';
+import '@fontsource-variable/syne';
 import '../styles/global.css';
 import SignatureLogo from '../components/SignatureLogo.astro';
+import SignatureMark from '../components/SignatureMark.astro';
 import { relRoot } from '../lib/paths';
 
 interface Props {
@@ -14,9 +16,18 @@ interface Props {
   /** Extra JSON-LD blocks, already-shaped objects */
   jsonLd?: object[];
   ogType?: string;
+  /** Absolute URL for og:image; falls back to the site logo */
+  ogImage?: string;
 }
 
-const { title, description, world = 'music', jsonLd = [], ogType = 'website' } = Astro.props;
+const {
+  title,
+  description,
+  world = 'music',
+  jsonLd = [],
+  ogType = 'website',
+  ogImage = 'https://jonwolfnj.com/images/logo.png',
+} = Astro.props;
 
 const pathname = Astro.url.pathname;
 const root = relRoot(pathname);
@@ -34,6 +45,17 @@ const navItems = [
 
 const isCurrent = (href: string) =>
   href === '' ? pathname === '/' : pathname.startsWith('/' + href);
+
+// Footer piano: two octaves, C4–B5. Whites carry their sharp (if any) as a
+// nested black key. Left half lights signal (day), right half tungsten (night).
+const WHITE_OFFSETS = [0, 2, 4, 5, 7, 9, 11];
+const HAS_SHARP = new Set([0, 2, 5, 7, 9]);
+const pianoKeys = [60, 72].flatMap((base) =>
+  WHITE_OFFSETS.map((off) => ({
+    midi: base + off,
+    sharp: HAS_SHARP.has(off) ? base + off + 1 : null,
+  }))
+);
 ---
 
 <!doctype html>
@@ -52,7 +74,7 @@ const isCurrent = (href: string) =>
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
     <meta property="og:site_name" content="Jon Wolf" />
-    <meta property="og:image" content="https://jonwolfnj.com/images/logo.png" />
+    <meta property="og:image" content={ogImage} />
     <meta name="twitter:card" content="summary_large_image" />
 
     {jsonLd.map((block) => (
@@ -107,19 +129,34 @@ const isCurrent = (href: string) =>
     </main>
 
     <footer class="site-footer">
+      <div class="footer-keys" aria-hidden="true">
+        {pianoKeys.map((k, i) => (
+          <div
+            class="fk-white"
+            data-note={k.midi}
+            style={`--k-accent: ${i < pianoKeys.length / 2 ? 'var(--signal)' : 'var(--tungsten)'}`}
+          >
+            {k.sharp !== null && <span class="fk-black" data-note={k.sharp}></span>}
+          </div>
+        ))}
+      </div>
+
       <div class="container">
+        <p class="footer-keys__hint">YES, IT PLAYS. GO AHEAD.</p>
+
         <div class="site-footer__grid">
-          <div>
-            <h2>JON WOLF</h2>
-            <p class="lede" style="font-size: 1rem;">
-              By day, websites. By night, setlists.
+          <div class="site-footer__brand">
+            <a class="footer-sig" href={root} aria-label="Jon Wolf — home">
+              <SignatureMark />
+            </a>
+            <p class="footer-place">Office/Studios in Saddle Brook, NJ</p>
+            <p class="footer-tagline">
+              By day, <span class="hl-web">WEBSITES</span>. By night,
+              <span class="hl-music">SETLISTS</span>.
             </p>
-            <p class="mono" style="margin-top: 1rem;">
+            <p class="mono" style="margin-top: 1.25rem;">
               <a href="mailto:jonwolf@livewebstudios.com">jonwolf@livewebstudios.com</a><br />
               <a href="tel:+17328019611">732.801.9611</a>
-            </p>
-            <p class="mono" style="margin-top: 0.75rem; color: var(--bone-dim);">
-              Office/Studios in Saddle Brook, NJ
             </p>
           </div>
 
@@ -311,6 +348,69 @@ const isCurrent = (href: string) =>
 
         document.addEventListener('mouseleave', () => {
           spot.classList.remove('is-on');
+        });
+      }
+
+      // ---- Footer piano: soft plucked notes, day→night glow across the strip ----
+      const keysEl = document.querySelector<HTMLElement>('.footer-keys');
+      if (keysEl) {
+        let ctx: AudioContext | null = null;
+
+        const play = (midi: number) => {
+          ctx ??= new AudioContext();
+          if (ctx.state === 'suspended') ctx.resume();
+          const freq = 440 * Math.pow(2, (midi - 69) / 12);
+          const t = ctx.currentTime;
+
+          const out = ctx.createGain();
+          out.gain.setValueAtTime(0.0001, t);
+          out.gain.exponentialRampToValueAtTime(0.2, t + 0.012);
+          out.gain.exponentialRampToValueAtTime(0.0001, t + 1.1);
+
+          const lp = ctx.createBiquadFilter();
+          lp.type = 'lowpass';
+          lp.frequency.value = 2600;
+          lp.connect(out);
+          out.connect(ctx.destination);
+
+          // fundamental + quiet octave partial: warm, electric-piano-ish
+          const voices: Array<[OscillatorType, number, number]> = [
+            ['triangle', 1, 0.7],
+            ['sine', 2, 0.22],
+          ];
+          for (const [type, mult, amt] of voices) {
+            const osc = ctx.createOscillator();
+            osc.type = type;
+            osc.frequency.value = freq * mult;
+            const g = ctx.createGain();
+            g.gain.value = amt;
+            osc.connect(g);
+            g.connect(lp);
+            osc.start(t);
+            osc.stop(t + 1.2);
+          }
+        };
+
+        let pointerHeld = false;
+        document.addEventListener('pointerup', () => (pointerHeld = false));
+        document.addEventListener('pointercancel', () => (pointerHeld = false));
+
+        keysEl.querySelectorAll<HTMLElement>('[data-note]').forEach((key) => {
+          const strike = () => {
+            play(Number(key.dataset.note));
+            key.classList.add('is-lit');
+            window.setTimeout(() => key.classList.remove('is-lit'), 380);
+          };
+          key.addEventListener('pointerdown', (e) => {
+            e.preventDefault();
+            e.stopPropagation(); // black keys sit inside whites — one note per press
+            pointerHeld = true;
+            strike();
+          });
+          // glissando: sweep with the button held
+          key.addEventListener('pointerenter', () => {
+            if (pointerHeld) strike();
+          });
         });
       }
     </script>

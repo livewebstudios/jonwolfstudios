@@ -1,0 +1,24 @@
+---
+/**
+ * Static signature wordmark — same Ms Madi outlines as SignatureLogo, but
+ * with no ids, clips, or animation script, so it can repeat safely (footer).
+ * Letters take currentColor; the underline swash stays tungsten.
+ */
+import { LETTERS, SWASH, VIEWBOX } from './sig-paths';
+---
+
+<svg class="sigmark" viewBox={VIEWBOX} aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+  <g fill="currentColor">
+    {LETTERS.map((l) => <path d={l.d} />)}
+  </g>
+  <path d={SWASH.d} fill="var(--tungsten)" />
+</svg>
+
+<style>
+  .sigmark {
+    height: 60px;
+    width: auto;
+    display: block;
+    color: var(--bone);
+  }
+</style>

@@ -57,10 +57,17 @@ import { LETTERS, SWASH, SWASH_SPINE, VIEWBOX } from './sig-paths';
     display: block;
     color: var(--tungsten);
     overflow: visible; /* sparks + swash tail spill past the canvas */
+    /* visually enlarge without changing the layout box, so the header
+       keeps the same height */
+    transform: scale(1.22);
+    transform-origin: left center;
   }
 
   @media (max-width: 760px) {
-    .sig { height: 56px; }
+    .sig {
+      height: 56px;
+      transform: scale(1.05); /* tighter quarters next to the MENU button */
+    }
   }
 </style>
 

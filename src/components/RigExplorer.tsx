@@ -56,12 +56,13 @@ const UNITS: Unit[] = [
   {
     id: 'guitar',
     name: 'GUITARS',
-    role: 'ELECTRIC — TELECASTERS',
+    role: 'ELECTRIC — TELES & STRAT',
     specs: [
       { label: 'MAIN', value: 'Fender Custom Telecaster' },
       { label: 'VINTAGE', value: "Fender American Vintage '64 Telecaster" },
+      { label: 'CUSTOM SHOP', value: 'Fender Custom Shop American Stratocaster' },
     ],
-    note: "Keys are the main chair, but the guitar is part of the job too — a pair of Telecasters and a pedalboard built for the set.",
+    note: "Keys are the main chair, but the guitar is part of the job too — a pair of Telecasters, a Custom Shop Strat, and a pedalboard built for the set.",
     image: 'GEAR_PEDALBOARD',
     imageAlt: "Jon Wolf's guitar pedalboard",
   },

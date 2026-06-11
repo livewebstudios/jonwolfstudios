@@ -13,7 +13,7 @@ const jsonLd = [
     url: 'https://jonwolfnj.com/',
     jobTitle: 'Musician',
     description:
-      'Performing keyboardist and guitarist based in North Jersey. Member of The British Invasion Years.',
+      'Performing keyboardist, guitarist and vocalist based in North Jersey. Member of The British Invasion Years.',
     memberOf: {
       '@type': 'PerformingGroup',
       name: 'The British Invasion Years',
@@ -32,8 +32,8 @@ const jsonLd = [
 ---
 
 <Base
-  title="Music — Jon Wolf, NJ Keyboardist & Guitarist"
-  description="Performing keyboardist and guitarist in North Jersey. MainStage and hardware rigs, vocal harmony charts, and The British Invasion Years touring show."
+  title="Music — Jon Wolf, NJ Keyboardist & Vocalist"
+  description="Performing keyboardist, guitarist and vocalist in North Jersey. MainStage and hardware rigs, vocal harmony charts, and The British Invasion Years touring show."
   world="music"
   jsonLd={jsonLd}
 >
@@ -45,7 +45,7 @@ const jsonLd = [
       </div>
       <div class="container">
         <p class="kicker reveal">THE STAGE</p>
-        <h1 class="reveal">Performing keyboardist &amp; guitarist.</h1>
+        <h1 class="reveal">Performing keyboardist, guitarist and vocalist.</h1>
         <p class="lede reveal" style="margin-top: 1.5rem; max-width: 42rem;">
           Piano, keyboards, and electric guitar — with some acoustic when the set calls for it.
           Jon is based in North Jersey and plays stages well beyond it. The job is making the band
@@ -63,6 +63,16 @@ const jsonLd = [
         <div class="reveal">
           <RigExplorer client:visible pedalboardSrc={root + 'images/gear/pedalboard.jpg'} />
         </div>
+
+        <figure class="pullquote reveal" style="margin-top: 2.5rem;">
+          <blockquote>
+            <p>
+              “A chord is just three notes that decided to stop arguing and agree on something.
+              I've been chasing that feeling for 40 years.”
+            </p>
+          </blockquote>
+          <figcaption>— JON WOLF</figcaption>
+        </figure>
       </div>
     </section>
 
@@ -81,10 +91,19 @@ const jsonLd = [
             organizers; the band is booked through Blue Raven Entertainment.
           </p>
           <p class="reveal">
-            His quiet specialty: the vocal harmonies. Jon creates and maintains the band's
+            His quiet specialty: the vocal harmonies. Jon assists in laying out the band's
             multi-voice harmony charts — the arrangements that keep the voices locked where the
             records put them. It's the kind of work the audience never sees and always hears.
           </p>
+          <figure class="pullquote reveal">
+            <blockquote>
+              <p>
+                “You can practice alone for years. But you don't learn to listen until somebody
+                else's downbeat depends on you.”
+              </p>
+            </blockquote>
+            <figcaption>— JON WOLF</figcaption>
+          </figure>
           <p class="reveal mono">
             <a href="https://britishinvasionyears.com" rel="noopener">britishinvasionyears.com →</a>
           </p>
@@ -103,7 +122,7 @@ const jsonLd = [
             <img src={root + 'images/atmos/music-rig.jpg'} alt="Multi-keyboard live rig in concert haze under amber and blue stage light" loading="lazy" width="1600" height="893" />
             <figcaption class="mono-label">THE RIG, IN ITS NATURAL HABITAT</figcaption>
           </figure>
-          <figure class="media-grid__item reveal">
+          <figure class="media-grid__item media-grid__item--natural reveal">
             <img src={root + 'images/jon/darkkeys.jpg'} alt="Jon Wolf playing keyboards live on a darkened stage" loading="lazy" width="1000" height="1000" />
             <figcaption class="mono-label">LIVE AT THE KEYS</figcaption>
           </figure>
@@ -169,6 +188,12 @@ const jsonLd = [
   }
 
   .media-grid__item--wide img { aspect-ratio: 21 / 9; }
+
+  /* full frame, no crop — the photo's own aspect decides the height */
+  .media-grid__item--natural img {
+    aspect-ratio: auto;
+    object-fit: contain;
+  }
 
   .media-grid__item:hover img {
     transform: scale(1.03);

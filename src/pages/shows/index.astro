@@ -8,6 +8,11 @@ const shows = getShows(); // newest first
 const upcoming = getUpcomingShows();
 const INITIAL = 15;
 
+// Next 4 dates, soonest first, pulled out of the main calendar below
+const nextUp = upcoming.slice().sort((a, b) => a.date.localeCompare(b.date)).slice(0, 4);
+const nextUpKeys = new Set(nextUp.map((s) => s.date + s.venue));
+const calendar = shows.filter((s) => !nextUpKeys.has(s.date + s.venue));
+
 const eventJsonLd = upcoming.map((show) => ({
   '@context': 'https://schema.org',
   '@type': 'Event',
@@ -50,7 +55,7 @@ const breadcrumb = {
 >
   <article data-world="music">
     <section class="section page-head">
-      <div class="bg-layer" aria-hidden="true">
+      <div class="bg-layer bg-layer--bright" aria-hidden="true">
         <img src={root + 'images/atmos/shows-theater.jpg'} alt="" fetchpriority="high" width="1600" height="893" />
       </div>
       <div class="container">
@@ -63,11 +68,48 @@ const breadcrumb = {
       </div>
     </section>
 
-    <section class="section" aria-label="All shows">
+    <section class="section" aria-label="Upcoming shows">
       <div class="container">
+        <p class="kicker reveal">NEXT UP</p>
+        <h2 class="reveal" style="margin-bottom: 2rem;">Upcoming shows</h2>
+        <ol class="setlist">
+          {
+            nextUp.map((show) => {
+              const where = `${show.city}, ${show.state} — ${show.act}`;
+              const link = show.ticketsUrl ?? show.rsvpUrl;
+              const linkLabel = show.ticketsUrl ? 'TICKETS →' : 'RSVP →';
+              return (
+                <li class="setlist__row" data-spot="tight">
+                  {link ? (
+                    <a class="setlist__link" href={link} rel="noopener">
+                      <span class="setlist__date">{formatShowDate(show.date)}</span>
+                      <span class="setlist__venue">{show.venue}</span>
+                      <span class="setlist__where">{where}</span>
+                      <span class="setlist__tix">{linkLabel}</span>
+                    </a>
+                  ) : (
+                    <div class="setlist__static">
+                      <span class="setlist__date">{formatShowDate(show.date)}</span>
+                      <span class="setlist__venue">{show.venue}</span>
+                      <span class="setlist__where">{where}</span>
+                      {show.time ? <span class="setlist__tix">{show.time}</span> : null}
+                    </div>
+                  )}
+                </li>
+              );
+            })
+          }
+        </ol>
+      </div>
+    </section>
+
+    <section class="section" aria-label="2025 and 2026 calendar">
+      <div class="container">
+        <p class="kicker reveal">THE FULL RUN</p>
+        <h2 class="reveal" style="margin-bottom: 2rem;">2025 and 2026 calendar</h2>
         <ol class="setlist" id="setlist">
           {
-            shows.map((show, i) => {
+            calendar.map((show, i) => {
               const where = `${show.city}, ${show.state} — ${show.act}`;
               const link = show.ticketsUrl ?? show.rsvpUrl;
               const linkLabel = show.ticketsUrl ? 'TICKETS →' : 'RSVP →';
@@ -97,6 +139,16 @@ const breadcrumb = {
         <div class="shows-more-wrap">
           <button class="btn btn--ghost shows-more" type="button">Read more</button>
         </div>
+
+        <figure class="pullquote reveal" style="margin-top: 3rem;">
+          <blockquote>
+            <p>
+              “The band doesn't start when the first note plays. It starts in the parking lot,
+              loading in, when somebody holds the door.”
+            </p>
+          </blockquote>
+          <figcaption>— JON WOLF</figcaption>
+        </figure>
         <noscript>
           <style>
             #setlist .setlist__row { display: list-item !important; }

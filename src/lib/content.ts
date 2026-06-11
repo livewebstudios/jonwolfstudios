@@ -35,6 +35,9 @@ export interface Post {
   tag: 'music' | 'web';
   excerpt: string;
   body: string; // markdown
+  /** site-relative path, e.g. images/notes/slug.jpg */
+  image?: string;
+  imageAlt?: string;
 }
 
 const byDateDesc = (a: Post, b: Post) => b.date.localeCompare(a.date);
