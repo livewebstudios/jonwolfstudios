@@ -1,19 +1,17 @@
 ---
 import Base from '../../layouts/Base.astro';
 import { relRoot } from '../../lib/paths';
-import { getShows, formatShowDate } from '../../lib/content';
+import { getShows, getUpcomingShows, formatShowDate } from '../../lib/content';
 
 const root = relRoot(Astro.url.pathname);
-const { upcoming, past } = getShows();
-
-const month = new Date().getMonth();
-const season =
-  month >= 2 && month <= 4 ? 'spring' : month >= 5 && month <= 7 ? 'summer' : month >= 8 && month <= 10 ? 'fall' : 'winter';
+const shows = getShows(); // newest first
+const upcoming = getUpcomingShows();
+const INITIAL = 15;
 
 const eventJsonLd = upcoming.map((show) => ({
   '@context': 'https://schema.org',
   '@type': 'Event',
-  name: `${show.band} — ${show.venue}`,
+  name: `${show.act} — ${show.venue}`,
   startDate: show.date,
   eventStatus: 'https://schema.org/EventScheduled',
   eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
@@ -28,10 +26,10 @@ const eventJsonLd = upcoming.map((show) => ({
     },
   },
   performer: [
-    { '@type': 'PerformingGroup', name: show.band },
+    { '@type': 'PerformingGroup', name: show.act },
     { '@type': 'Person', name: 'Jon Wolf', url: 'https://jonwolfnj.com/' },
   ],
-  ...(show.ticketUrl ? { offers: { '@type': 'Offer', url: show.ticketUrl } } : {}),
+  ...(show.ticketsUrl ? { offers: { '@type': 'Offer', url: show.ticketsUrl } } : {}),
 }));
 
 const breadcrumb = {
@@ -46,7 +44,7 @@ const breadcrumb = {
 
 <Base
   title="Shows — Jon Wolf Live Dates"
-  description="Upcoming live dates for Jon Wolf — keyboardist and guitarist with The British Invasion Years and beyond. Dates update regularly."
+  description="Live dates for Jon Wolf — solo piano, private events, and The British Invasion Years across NJ, NY, PA, and beyond. Dates update regularly."
   world="music"
   jsonLd={[breadcrumb, ...eventJsonLd]}
 >
@@ -57,108 +55,117 @@ const breadcrumb = {
       </div>
       <div class="container">
         <p class="kicker reveal">SET TIMES</p>
-        <h1 class="reveal">Shows</h1>
+        <h1 class="reveal">Shows for 2026</h1>
         <p class="lede reveal" style="margin-top: 1.5rem;">
-          Where to catch it live. Dates update regularly — if nothing's listed yet, more are on the
-          way.
+          The full run — upcoming dates up top, the road behind below. Solo piano, private events,
+          and The British Invasion Years. Dates update regularly.
         </p>
       </div>
     </section>
 
-    <section class="section" aria-label="Upcoming shows">
+    <section class="section" aria-label="All shows">
       <div class="container">
-        <h2 class="showlist__header reveal">UPCOMING</h2>
-
-        {
-          upcoming.length > 0 ? (
-            <ol class="setlist">
-              {/* PLACEHOLDER: venues below are invented placeholders — replace with real booked dates via /admin/ */}
-              {upcoming.map((show) => (
-                <li class="setlist__row reveal" data-spot="tight">
-                  {show.ticketUrl ? (
-                    <a class="setlist__link" href={show.ticketUrl} rel="noopener">
+        <ol class="setlist" id="setlist">
+          {
+            shows.map((show, i) => {
+              const where = `${show.city}, ${show.state} — ${show.act}`;
+              const link = show.ticketsUrl ?? show.rsvpUrl;
+              const linkLabel = show.ticketsUrl ? 'TICKETS →' : 'RSVP →';
+              return (
+                <li class={`setlist__row${show.past ? ' is-past' : ''}`} hidden={i >= INITIAL} data-spot="tight">
+                  {!show.past && link ? (
+                    <a class="setlist__link" href={link} rel="noopener">
                       <span class="setlist__date">{formatShowDate(show.date)}</span>
                       <span class="setlist__venue">{show.venue}</span>
-                      <span class="setlist__where">
-                        {show.city}, {show.state} — {show.band}
-                      </span>
-                      <span class="setlist__tix">TICKETS →</span>
+                      <span class="setlist__where">{where}</span>
+                      <span class="setlist__tix">{linkLabel}</span>
                     </a>
                   ) : (
                     <div class="setlist__static">
                       <span class="setlist__date">{formatShowDate(show.date)}</span>
                       <span class="setlist__venue">{show.venue}</span>
-                      <span class="setlist__where">
-                        {show.city}, {show.state} — {show.band}
-                      </span>
+                      <span class="setlist__where">{where}</span>
+                      {show.time ? <span class="setlist__tix">{show.time}</span> : null}
                     </div>
                   )}
                 </li>
-              ))}
-            </ol>
-          ) : (
-            <div class="showlist__empty reveal">
-              <p class="lede">Booking now for {season}. Reach out.</p>
-              <a class="btn" href={root + 'contact/'} style="margin-top: 1.5rem;">
-                Let's talk.
-              </a>
-            </div>
-          )
-        }
+              );
+            })
+          }
+        </ol>
 
-        {
-          past.length > 0 ? (
-            <>
-              <h2 class="showlist__header showlist__header--past reveal">PAST</h2>
-              <ol class="setlist setlist--past">
-                {past.map((show) => (
-                  <li class="setlist__row reveal">
-                    <div class="setlist__static">
-                      <span class="setlist__date">{formatShowDate(show.date)}</span>
-                      <span class="setlist__venue">{show.venue}</span>
-                      <span class="setlist__where">
-                        {show.city}, {show.state} — {show.band}
-                      </span>
-                    </div>
-                  </li>
-                ))}
-              </ol>
-            </>
-          ) : null
-        }
+        <div class="shows-more-wrap">
+          <button class="btn btn--ghost shows-more" type="button">Read more</button>
+        </div>
+        <noscript>
+          <style>
+            #setlist .setlist__row { display: list-item !important; }
+            .shows-more-wrap { display: none; }
+          </style>
+        </noscript>
       </div>
     </section>
   </article>
 </Base>
 
+<script>
+  // Progressive reveal — show 15, "Read more" reveals the next 15, and so on.
+  const STEP = 15;
+  const rows = Array.from(document.querySelectorAll<HTMLLIElement>('#setlist .setlist__row'));
+  const btn = document.querySelector<HTMLButtonElement>('.shows-more');
+  let shown = STEP;
+
+  const apply = () => {
+    rows.forEach((r, i) => {
+      r.hidden = i >= shown;
+    });
+    if (!btn) return;
+    if (shown >= rows.length) {
+      btn.hidden = true;
+    } else {
+      const next = Math.min(STEP, rows.length - shown);
+      btn.textContent = `Read more (${next} more)`;
+    }
+  };
+
+  if (btn && rows.length <= STEP) btn.hidden = true;
+
+  btn?.addEventListener('click', () => {
+    shown += STEP;
+    apply();
+    // focus the first newly revealed row for keyboard users
+    const firstNew = rows[shown - STEP];
+    firstNew?.querySelector<HTMLElement>('a, [tabindex]')?.focus();
+  });
+
+  apply();
+</script>
+
 <style>
   .page-head {
-    min-height: 48svh;
+    min-height: 46svh;
     display: grid;
     align-items: end;
     padding-top: clamp(5rem, 12vh, 8rem);
   }
 
-  .showlist__header {
-    font-family: var(--font-mono);
-    font-size: var(--text-small);
-    font-weight: 500;
-    letter-spacing: 0.22em;
-    color: var(--accent);
-    margin-bottom: 1rem;
-  }
-
-  .showlist__header--past {
-    margin-top: 4rem;
+  .setlist__row.is-past .setlist__date,
+  .setlist__row.is-past .setlist__tix {
     color: var(--bone-dim);
   }
 
-  .showlist__empty {
-    padding: clamp(2.5rem, 6vw, 4.5rem);
-    border: 1px dashed var(--scrim);
-    border-radius: var(--radius);
-    text-align: center;
-    display: grid;
-    justify-items: center;
+  .setlist__row.is-past .setlist__venue {
+    color: var(--bone-dim);
+    font-weight: 500;
+  }
+
+  .setlist__row.is-past {
+    opacity: 0.78;
+  }
+
+  .shows-more-wrap {
+    margin-top: 2.5rem;
+    display: flex;
+    justify-content: center;
   }
 </style>

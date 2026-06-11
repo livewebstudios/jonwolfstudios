@@ -1,13 +1,16 @@
 /**
  * Generate src/components/sig-paths.ts — exact "JON WOLF" letter outlines
- * (Rockstar-Regular) + underline swash (Rockstarswashes glyph #38),
- * simplified for header scale: integer precision, brush speckles smaller
- * than a few units dropped (sub-pixel at 44px render height).
+ * (Rockstar-Regular) + a single underline swash (Rockstarswashes), positioned
+ * as ONE clean stroke clearly below the letters (matching Jon's reference).
+ *
+ * Also writes scripts/swash-compare.svg: JON WOLF with several candidate
+ * swash glyphs underneath, so the closest match can be eyeballed.
  */
 import { readFileSync, writeFileSync } from 'node:fs';
 import opentype from 'opentype.js';
 
-const FONTS = 'C:/Users/drfre/Desktop/Rockstar Fonts/';
+// Rockstar fonts are user-installed; resolve from the per-user Fonts dir.
+const FONTS = process.env.LOCALAPPDATA + '/Microsoft/Windows/Fonts/';
 const toBuf = (f) => readFileSync(FONTS + f).buffer;
 
 const rockstar = opentype.parse(toBuf('Rockstar-Regular.otf'));
@@ -18,9 +21,20 @@ const SIZE = 96;
 const X = 4;
 const Y = 100;
 
-/** Flatten path commands into polygon subpaths, drop specks, RDP-simplify, emit compact data. */
+// Layout
+const SWASH_CENTER_Y = 130;
+const SWASH_LEFT_X = 6;
+const SWASH_WIDTH = 356;
+const VB_W = 372;
+const VB_H = 166;
+
+// Which swash glyph reads closest to Jon's reference (thick rounded left,
+// gentle arch, single continuous taper, speckled tail with a fleck at the
+// end). Glyph 15 — glyph 38 broke in the middle and read as two strokes.
+const CHOSEN_GLYPH = 15;
+
+/** Flatten path commands into polygons, drop specks, RDP-simplify, emit compact data. */
 function simplify(path, minSpan = 4, epsilon = 0.7) {
-  // split into subpaths
   const subs = [];
   let cur = [];
   for (const c of path.commands) {
@@ -50,10 +64,7 @@ function simplify(path, minSpan = 4, epsilon = 0.7) {
     const pts = [];
     let pos = [0, 0];
     for (const c of sub) {
-      if (c.type === 'M') {
-        pos = [c.x, c.y];
-        pts.push(pos);
-      } else if (c.type === 'L') {
+      if (c.type === 'M' || c.type === 'L') {
         pos = [c.x, c.y];
         pts.push(pos);
       } else if (c.type === 'C' || c.type === 'Q') {
@@ -86,9 +97,7 @@ function simplify(path, minSpan = 4, epsilon = 0.7) {
       }
     }
     if (maxD <= eps) return [a, b];
-    const left = rdp(pts.slice(0, idx + 1), eps);
-    const right = rdp(pts.slice(idx), eps);
-    return left.slice(0, -1).concat(right);
+    return rdp(pts.slice(0, idx + 1), eps).slice(0, -1).concat(rdp(pts.slice(idx), eps));
   };
 
   let kept = 0;
@@ -108,31 +117,24 @@ function simplify(path, minSpan = 4, epsilon = 0.7) {
       continue;
     }
     kept++;
-    // Closed loop: a==b degenerates the RDP baseline — split at the point
-    // farthest from the start and simplify the two open halves.
+    const closed = Math.hypot(pts[0][0] - pts.at(-1)[0], pts[0][1] - pts.at(-1)[1]) < 0.01;
     let simp;
-    const closed =
-      Math.hypot(pts[0][0] - pts[pts.length - 1][0], pts[0][1] - pts[pts.length - 1][1]) < 0.01;
     if (closed && pts.length > 3) {
       let far = 1;
       let best = 0;
       for (let i = 1; i < pts.length; i++) {
-        const d = Math.hypot(pts[i][0] - pts[0][0], pts[i][1] - pts[0][1]);
-        if (d > best) {
-          best = d;
+        const dd = Math.hypot(pts[i][0] - pts[0][0], pts[i][1] - pts[0][1]);
+        if (dd > best) {
+          best = dd;
           far = i;
         }
       }
-      const h1 = rdp(pts.slice(0, far + 1), epsilon);
-      const h2 = rdp(pts.slice(far), epsilon);
-      simp = h1.slice(0, -1).concat(h2);
+      simp = rdp(pts.slice(0, far + 1), epsilon).slice(0, -1).concat(rdp(pts.slice(far), epsilon));
     } else {
       simp = rdp(pts, epsilon);
     }
     d += `M${Math.round(simp[0][0])} ${Math.round(simp[0][1])}`;
-    for (let i = 1; i < simp.length; i++) {
-      d += `L${Math.round(simp[i][0])} ${Math.round(simp[i][1])}`;
-    }
+    for (let i = 1; i < simp.length; i++) d += `L${Math.round(simp[i][0])} ${Math.round(simp[i][1])}`;
     d += 'Z';
   }
   return { d, kept, dropped };
@@ -142,7 +144,7 @@ function simplify(path, minSpan = 4, epsilon = 0.7) {
 const letters = [];
 rockstar.forEachGlyph(TEXT, X, Y, SIZE, { kerning: true }, (glyph, gx, gy, gsize) => {
   const p = glyph.getPath(gx, gy, gsize);
-  if (!p.commands.length) return; // space
+  if (!p.commands.length) return;
   const b = p.getBoundingBox();
   const s = simplify(p);
   letters.push({
@@ -153,26 +155,50 @@ rockstar.forEachGlyph(TEXT, X, Y, SIZE, { kerning: true }, (glyph, gx, gy, gsize
     x2: +b.x2.toFixed(1),
     y2: +b.y2.toFixed(1),
   });
-  console.log(`${String.fromCharCode(glyph.unicode)} kept ${s.kept} dropped ${s.dropped} len ${s.d.length}`);
 });
 
-// ---- Swash: glyph #38, scaled to span the wordmark width ----
-const sw = swashes.glyphs.get(38);
-const probe = sw.getPath(0, 0, 96).getBoundingBox();
-const targetW = 348;
-const scale = targetW / (probe.x2 - probe.x1);
-const size = 96 * scale;
-const p0 = sw.getPath(0, 0, size).getBoundingBox();
-// place: left edge x=8, vertical center y=126
-const sx = 8 - p0.x1;
-const sy = 126 - (p0.y1 + p0.y2) / 2;
-const swashPath = sw.getPath(sx, sy, size);
-const sb = swashPath.getBoundingBox();
-const ss = simplify(swashPath, 5);
-console.log(`swash kept ${ss.kept} dropped ${ss.dropped} len ${ss.d.length} bbox ${JSON.stringify(sb)}`);
+/** Build a swash path for a given glyph index, scaled+placed as the underline. */
+function buildSwash(glyphIndex) {
+  const g = swashes.glyphs.get(glyphIndex);
+  const probe = g.getPath(0, 0, 96).getBoundingBox();
+  const scale = SWASH_WIDTH / (probe.x2 - probe.x1);
+  const size = 96 * scale;
+  const p0 = g.getPath(0, 0, size).getBoundingBox();
+  const sx = SWASH_LEFT_X - p0.x1;
+  const sy = SWASH_CENTER_Y - (p0.y1 + p0.y2) / 2;
+  const path = g.getPath(sx, sy, size);
+  const b = path.getBoundingBox();
+  const s = simplify(path, 5);
+  return { d: s.d, x1: +b.x1.toFixed(1), y1: +b.y1.toFixed(1), x2: +b.x2.toFixed(1), y2: +b.y2.toFixed(1) };
+}
+
+// ---- Compare sheet ----
+const CANDIDATES = [13, 15, 24, 25, 38, 40];
+const wordPath = rockstar.getPath(TEXT, X, Y, SIZE, { kerning: true }).toPathData(1);
+const compareRows = CANDIDATES.map((gi, row) => {
+  const sw = buildSwash(gi);
+  const yOff = row * 180;
+  return `<g transform="translate(0 ${yOff})">
+    <path d="${wordPath}" fill="#EDE7DC"/>
+    <path d="${sw.d}" fill="#F2A33C"/>
+    <text x="${VB_W + 14}" y="100" font-family="monospace" font-size="20" fill="#888">glyph ${gi}</text>
+  </g>`;
+}).join('\n');
+writeFileSync(
+  'scripts/swash-compare.svg',
+  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${VB_W + 140} ${CANDIDATES.length * 180}" style="background:#14121A">${compareRows}</svg>`
+);
+
+// ---- Final swash + module ----
+const swash = buildSwash(CHOSEN_GLYPH);
+const cy = (swash.y1 + swash.y2) / 2;
+// Spine tracks the swash centerline with a faint upward bow; the wide mask
+// stroke around it sweeps the whole brushstroke into view left-to-right.
+const spine = `M ${Math.round(swash.x1 + 2)} ${Math.round(cy + 4)} C 120 ${Math.round(cy - 6)}, 250 ${Math.round(cy - 6)}, ${Math.round(swash.x2 - 3)} ${Math.round(cy - 2)}`;
 
 const out = `// AUTO-GENERATED by scripts/gen-logo.mjs — do not hand-edit.
-// "JON WOLF" outlines from Rockstar-Regular, swash from Rockstarswashes-Regular (glyph 38).
+// "JON WOLF" outlines from Rockstar-Regular; underline swash from
+// Rockstarswashes-Regular (glyph ${CHOSEN_GLYPH}), placed as a single stroke below the word.
 
 export interface SigLetter {
   char: string;
@@ -183,21 +209,17 @@ export interface SigLetter {
   y2: number;
 }
 
-export const VIEWBOX = '0 0 368 146';
+export const VIEWBOX = '0 0 ${VB_W} ${VB_H}';
 
 export const LETTERS: SigLetter[] = ${JSON.stringify(letters)};
 
-export const SWASH = {
-  d: ${JSON.stringify(ss.d)},
-  x1: ${+sb.x1.toFixed(1)},
-  y1: ${+sb.y1.toFixed(1)},
-  x2: ${+sb.x2.toFixed(1)},
-  y2: ${+sb.y2.toFixed(1)},
-};
+export const SWASH = ${JSON.stringify(swash)};
 
-/** Pen spine for the swash mask stroke — follows the swash's arc. */
-export const SWASH_SPINE = 'M ${(sb.x1 + 2).toFixed(0)} ${((sb.y1 + sb.y2) / 2 + 3).toFixed(0)} C 110 ${(sb.y1 + 1).toFixed(0)}, 240 ${(sb.y1 + 1).toFixed(0)}, ${(sb.x2 - 3).toFixed(0)} ${((sb.y1 + sb.y2) / 2 - 1).toFixed(0)}';
+/** Pen spine for the swash reveal mask — follows the swash's arc. */
+export const SWASH_SPINE = ${JSON.stringify(spine)};
 `;
 
 writeFileSync('src/components/sig-paths.ts', out);
-console.log('total ts size:', out.length, 'bytes → src/components/sig-paths.ts');
+console.log('letters:', letters.map((l) => l.char).join(''));
+console.log('swash bbox:', JSON.stringify(swash));
+console.log('wrote sig-paths.ts and swash-compare.svg');

@@ -1,13 +1,31 @@
 import showsFile from '../../_content/shows.json';
 import postsFile from '../../_content/posts.json';
 
-export interface Show {
-  date: string; // ISO yyyy-mm-dd
+/** Raw shape as stored in _content/shows.json (snake_case from the band feed). */
+interface RawShow {
+  date: string;
+  day?: string;
   venue: string;
   city: string;
   state: string;
-  band: string;
-  ticketUrl?: string;
+  act: string;
+  past?: boolean;
+  time?: string;
+  tickets_url?: string;
+  rsvp_url?: string;
+}
+
+export interface Show {
+  date: string; // ISO yyyy-mm-dd
+  day?: string;
+  venue: string;
+  city: string;
+  state: string;
+  act: string;
+  past: boolean;
+  time?: string;
+  ticketsUrl?: string;
+  rsvpUrl?: string;
 }
 
 export interface Post {
@@ -19,17 +37,29 @@ export interface Post {
   body: string; // markdown
 }
 
-const byDateAsc = (a: Show, b: Show) => a.date.localeCompare(b.date);
 const byDateDesc = (a: Post, b: Post) => b.date.localeCompare(a.date);
 
-/** Shows split at build time — "today" is the moment Netlify builds. */
-export function getShows(): { upcoming: Show[]; past: Show[] } {
-  const today = new Date().toISOString().slice(0, 10);
-  const all = (showsFile.shows as Show[]).slice().sort(byDateAsc);
-  return {
-    upcoming: all.filter((s) => s.date >= today),
-    past: all.filter((s) => s.date < today).reverse(),
-  };
+/** All shows, newest first. The shows page reveals them 15 at a time. */
+export function getShows(): Show[] {
+  return (showsFile.shows as RawShow[])
+    .map((s) => ({
+      date: s.date,
+      day: s.day,
+      venue: s.venue,
+      city: s.city,
+      state: s.state,
+      act: s.act,
+      past: Boolean(s.past),
+      time: s.time,
+      ticketsUrl: s.tickets_url,
+      rsvpUrl: s.rsvp_url,
+    }))
+    .sort((a, b) => b.date.localeCompare(a.date));
+}
+
+/** Upcoming only — for Event structured data. */
+export function getUpcomingShows(): Show[] {
+  return getShows().filter((s) => !s.past);
 }
 
 export function getPosts(): Post[] {

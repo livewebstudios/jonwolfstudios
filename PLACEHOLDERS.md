@@ -4,7 +4,7 @@
 | # | Page / file | Location | Currently shipping | Needed from Jon |
 |---|---|---|---|---|
 | 1 | `src/pages/contact/index.astro` | Form `action` | `https://formspree.io/f/FORM_ID` | Real Formspree form ID (form will not submit until swapped) |
-| 2 | `_content/shows.json` | All 6 shows | Invented venues (Crescent Ballroom, Riverside Bandshell, Palace Stage, Harborlight Pavilion, Stanton Theatre, Gaslight Room), Jul–Nov 2026 | Real booked dates — edit via `/admin/` once Netlify Identity is live |
+| 2 | `_content/shows.json` | — | ✅ RESOLVED — real schedule loaded (58 dates, 6 upcoming) from Jon's feed. Ongoing edits via `/admin/` once Netlify Identity is live | Keep current as dates are added/pass |
 | 3 | `src/pages/index.astro` | "Currently" block | Placeholder copy: summer-run prep, client builds, AI experiments | 2–3 real sentences on what's actually current |
 | 4 | `src/components/RigExplorer.tsx` | GUITAR tab specs | Fender Stratocaster / Taylor dreadnought / direct-to-FOH | Actual guitar make/model + signal chain |
 | 5 | `src/pages/about/index.astro` | Bio photo | Atmosphere still (hands on keys) | One real photo of Jon — no AI faces, ever |

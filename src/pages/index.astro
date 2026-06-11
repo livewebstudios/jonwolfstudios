@@ -2,11 +2,8 @@
 import Base from '../layouts/Base.astro';
 import HeroSequence from '../components/HeroSequence.tsx';
 import { relRoot } from '../lib/paths';
-import { getShows, formatShowDate } from '../lib/content';
 
 const root = relRoot(Astro.url.pathname);
-const { upcoming } = getShows();
-const nextShows = upcoming.slice(0, 3);
 
 const gear = [
   'MAINSTAGE',
@@ -80,6 +77,7 @@ const personJsonLd = {
       ></video>
     </div>
     <HeroSequence client:load root={root} />
+    <noscript><style>.hero__inner { opacity: 1 !important; }</style></noscript>
     <div class="scroll-cue" aria-hidden="true">SCROLL</div>
   </section>
 
@@ -126,45 +124,6 @@ const personJsonLd = {
         <span class="panel__cue">ENTER THE WORK →</span>
       </div>
     </a>
-  </section>
-
-  <!-- NEXT SHOWS -->
-  <section class="section" data-world="music">
-    <div class="bg-layer" aria-hidden="true">
-      <img src={root + 'images/atmos/shows-theater.jpg'} alt="" loading="lazy" width="1600" height="893" />
-    </div>
-    <div class="container">
-      <p class="kicker reveal">NEXT SHOWS</p>
-      <ol class="setlist">
-        {
-          nextShows.map((show) => (
-            <li class="setlist__row reveal" data-spot="tight">
-              {show.ticketUrl ? (
-                <a class="setlist__link" href={show.ticketUrl} rel="noopener">
-                  <span class="setlist__date">{formatShowDate(show.date)}</span>
-                  <span class="setlist__venue">{show.venue}</span>
-                  <span class="setlist__where">
-                    {show.city}, {show.state}
-                  </span>
-                  <span class="setlist__tix">TICKETS →</span>
-                </a>
-              ) : (
-                <div class="setlist__static">
-                  <span class="setlist__date">{formatShowDate(show.date)}</span>
-                  <span class="setlist__venue">{show.venue}</span>
-                  <span class="setlist__where">
-                    {show.city}, {show.state}
-                  </span>
-                </div>
-              )}
-            </li>
-          ))
-        }
-      </ol>
-      <p class="reveal" style="margin-top: 2rem;">
-        <a class="btn btn--ghost" href={root + 'shows/'}>Full Calendar</a>
-      </p>
-    </div>
   </section>
 
   <!-- CURRENTLY -->

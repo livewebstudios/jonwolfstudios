@@ -1,14 +1,15 @@
 ---
 /**
- * Animated signature wordmark — "JON WOLF" (Rockstar) + underline swash
- * (Rockstar Swashes), extracted as real outlines via opentype.js.
+ * Animated signature wordmark — "JON WOLF" (Rockstar) + a single underline
+ * swash (Rockstar Swashes glyph 15), extracted as real outlines via opentype.js.
  *
  * Draws itself like a hand signing a document: letters reveal left-to-right
- * behind animated clip rects, then the swash strokes through underneath via
- * a dashoffset mask. A pen point leads the reveal, shedding small sparks.
+ * behind animated clip rects, then the swash strokes through underneath via a
+ * dashoffset mask. A pen point leads the reveal, shedding sparks. On completion
+ * it broadcasts `signature:done` so the home hero can hold until the ink dries.
  *
- * Static-first: with no JS (or reduced motion, or already played this
- * session) the full mark is simply visible.
+ * Static-first: with no JS (or reduced motion, or already played this session)
+ * the full mark is simply visible.
  */
 import { LETTERS, SWASH, SWASH_SPINE, VIEWBOX } from './sig-paths';
 ---
@@ -23,7 +24,6 @@ import { LETTERS, SWASH, SWASH_SPINE, VIEWBOX } from './sig-paths';
           y={l.y1 - 5}
           width={l.x2 - l.x1 + 6}
           height={l.y2 - l.y1 + 10}
-          data-w={l.x2 - l.x1 + 6}
         />
       </clipPath>
     ))}
@@ -33,7 +33,7 @@ import { LETTERS, SWASH, SWASH_SPINE, VIEWBOX } from './sig-paths';
         d={SWASH_SPINE}
         fill="none"
         stroke="#fff"
-        stroke-width="44"
+        stroke-width="54"
         stroke-linecap="round"
       />
     </mask>
@@ -52,54 +52,62 @@ import { LETTERS, SWASH, SWASH_SPINE, VIEWBOX } from './sig-paths';
 
 <style>
   .sig {
-    height: 44px;
+    height: 58px;
     width: auto;
     display: block;
     color: var(--tungsten);
-    overflow: visible; /* sparks fly past the canvas */
+    overflow: visible; /* sparks + swash tail spill past the canvas */
   }
 
   @media (max-width: 760px) {
-    .sig { height: 36px; }
+    .sig { height: 46px; }
   }
 </style>
 
 <script>
-  import { LETTERS, SWASH } from './sig-paths';
+  import { LETTERS } from './sig-paths';
 
   const svg = document.querySelector<SVGSVGElement>('.sig');
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const played = sessionStorage.getItem('sigDrawn') === '1';
+  const willDraw = Boolean(svg) && !reduced && !played;
 
-  if (svg && !reduced && !played) {
+  // Let the hero know when it can come up.
+  const signalDone = () => {
+    (window as any).__signatureDone = true;
+    window.dispatchEvent(new CustomEvent('signature:done'));
+  };
+  (window as any).__signatureWillDraw = willDraw;
+
+  if (!willDraw) {
+    signalDone();
+  } else {
     try {
       sessionStorage.setItem('sigDrawn', '1');
     } catch {
       /* private mode */
     }
 
-    const clips = Array.from(svg.querySelectorAll<SVGRectElement>('.sig__clip'));
-    const spine = svg.querySelector<SVGPathElement>('.sig__spine')!;
-    const fx = svg.querySelector<SVGGElement>('.sig__fx')!;
+    const clips = Array.from(svg!.querySelectorAll<SVGRectElement>('.sig__clip'));
+    const spine = svg!.querySelector<SVGPathElement>('.sig__spine')!;
+    const fx = svg!.querySelector<SVGGElement>('.sig__fx')!;
     const spineLen = spine.getTotalLength();
 
-    // Hide everything before first paint
     clips.forEach((r) => r.setAttribute('width', '0'));
     spine.style.strokeDasharray = String(spineLen);
     spine.style.strokeDashoffset = String(spineLen);
 
-    // Pen point
     const pen = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-    pen.setAttribute('r', '3');
-    pen.setAttribute('fill', '#FFD9A0');
+    pen.setAttribute('r', '3.6');
+    pen.setAttribute('fill', '#FFE8C2');
     pen.style.opacity = '0';
     fx.appendChild(pen);
 
-    // ---- Timeline: per-letter durations proportional to width ----
-    const GAP = 45; // pen lift between letters (ms)
-    const LETTERS_MS = 1450;
-    const SWASH_PAUSE = 130;
-    const SWASH_MS = 480;
+    // ---- Timeline — total ~4.5s ----
+    const GAP = 70; // pen lift between letters (ms)
+    const LETTERS_MS = 2600;
+    const SWASH_PAUSE = 200;
+    const SWASH_MS = 900;
     const totalW = LETTERS.reduce((n, l) => n + (l.x2 - l.x1), 0);
 
     interface Seg {
@@ -109,7 +117,7 @@ import { LETTERS, SWASH, SWASH_SPINE, VIEWBOX } from './sig-paths';
     }
 
     const segs: Seg[] = [];
-    let cursor = 250; // beat before the pen touches down
+    let cursor = 300;
 
     LETTERS.forEach((l, i) => {
       const w = l.x2 - l.x1;
@@ -122,7 +130,6 @@ import { LETTERS, SWASH, SWASH_SPINE, VIEWBOX } from './sig-paths';
         end: start + dur,
         draw: (t) => {
           rect?.setAttribute('width', String((w + 6) * t));
-          // pen wanders vertically like a real stroke
           const y = midY + Math.sin(t * Math.PI * 2.2 + i) * (l.y2 - l.y1) * 0.28;
           return { x: l.x1 + w * t, y };
         },
@@ -130,7 +137,6 @@ import { LETTERS, SWASH, SWASH_SPINE, VIEWBOX } from './sig-paths';
       cursor += dur + GAP;
     });
 
-    // travel back to the swash start (pen up — no drawing, no sparks)
     cursor += SWASH_PAUSE;
     const swashStart = cursor;
     segs.push({
@@ -155,29 +161,29 @@ import { LETTERS, SWASH, SWASH_SPINE, VIEWBOX } from './sig-paths';
       life: number;
     }
     const sparks: Spark[] = [];
-    const COLORS = ['#F2A33C', '#FFD9A0', '#E4543F', '#FFF3DF'];
+    const COLORS = ['#F2A33C', '#FFD9A0', '#E4543F', '#FFF3DF', '#FFB347'];
 
     const spawn = (x: number, y: number, now: number) => {
       const el = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-      el.setAttribute('r', String(0.9 + Math.random() * 1.7));
+      el.setAttribute('r', String(0.8 + Math.random() * 1.9));
       el.setAttribute('fill', COLORS[(Math.random() * COLORS.length) | 0]!);
       fx.appendChild(el);
-      // bias: up and back-left, like grindstone sparks off the nib
-      const ang = Math.PI * (0.85 + Math.random() * 0.85);
-      const speed = 40 + Math.random() * 130;
+      const ang = Math.PI * (0.78 + Math.random() * 0.95); // up and back-left
+      const speed = 45 + Math.random() * 150;
       sparks.push({
         el,
         x,
         y,
         vx: Math.cos(ang) * speed,
-        vy: -Math.abs(Math.sin(ang)) * speed * 0.9,
+        vy: -Math.abs(Math.sin(ang)) * speed * 0.95,
         born: now,
-        life: 280 + Math.random() * 320,
+        life: 300 + Math.random() * 360,
       });
     };
 
     let t0: number | null = null;
     let last = 0;
+    let doneSignalled = false;
 
     const frame = (now: number) => {
       if (t0 === null) {
@@ -188,27 +194,25 @@ import { LETTERS, SWASH, SWASH_SPINE, VIEWBOX } from './sig-paths';
       const dt = Math.min(48, now - last) / 1000;
       last = now;
 
-      // drawing
       let penPos: { x: number; y: number } | null = null;
       for (const seg of segs) {
-        if (t >= seg.end) {
-          seg.draw(1);
-        } else if (t >= seg.start) {
-          penPos = seg.draw((t - seg.start) / (seg.end - seg.start));
-        }
+        if (t >= seg.end) seg.draw(1);
+        else if (t >= seg.start) penPos = seg.draw((t - seg.start) / (seg.end - seg.start));
       }
 
       if (penPos) {
         pen.style.opacity = '1';
         pen.setAttribute('cx', String(penPos.x));
         pen.setAttribute('cy', String(penPos.y));
-        if (Math.random() < 0.75) spawn(penPos.x, penPos.y, now);
-        if (Math.random() < 0.35) spawn(penPos.x, penPos.y, now);
+        // more sparks: 2 guaranteed + up to 2 extra per frame
+        spawn(penPos.x, penPos.y, now);
+        spawn(penPos.x, penPos.y, now);
+        if (Math.random() < 0.7) spawn(penPos.x, penPos.y, now);
+        if (Math.random() < 0.4) spawn(penPos.x, penPos.y, now);
       } else {
         pen.style.opacity = '0';
       }
 
-      // physics
       for (let i = sparks.length - 1; i >= 0; i--) {
         const s = sparks[i]!;
         const age = now - s.born;
@@ -217,7 +221,7 @@ import { LETTERS, SWASH, SWASH_SPINE, VIEWBOX } from './sig-paths';
           sparks.splice(i, 1);
           continue;
         }
-        s.vy += 320 * dt; // gravity
+        s.vy += 340 * dt; // gravity
         s.x += s.vx * dt;
         s.y += s.vy * dt;
         s.el.setAttribute('cx', String(s.x));
@@ -225,7 +229,12 @@ import { LETTERS, SWASH, SWASH_SPINE, VIEWBOX } from './sig-paths';
         s.el.style.opacity = String(1 - age / s.life);
       }
 
-      if (t < TOTAL + 700 || sparks.length > 0) {
+      if (!doneSignalled && t >= TOTAL) {
+        doneSignalled = true;
+        signalDone();
+      }
+
+      if (t < TOTAL + 800 || sparks.length > 0) {
         requestAnimationFrame(frame);
       } else {
         pen.remove();

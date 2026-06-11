@@ -9,43 +9,71 @@ interface Props {
 const EYEBROW = 'NORTH JERSEY · MUSICIAN · BUILDER';
 
 /**
- * Home hero — the one orchestrated entrance on the site.
- * Eyebrow types in, headline lines rise blur-to-sharp, sub + CTAs settle.
- * Total ≤ 1.6s, plays once per session.
+ * Home hero entrance. On a fresh session it waits for the header signature to
+ * finish drawing (the `signature:done` broadcast), then the eyebrow types in
+ * and the headline lines rise blur-to-sharp. On later navigations (or reduced
+ * motion / no-JS) it's simply shown.
  *
- * Hydration-safe: SSR markup is fully visible with no motion styles
- * (initial={false}); the entrance is driven by keyframes after mount,
- * so server and client HTML always match and no-JS visitors see content.
+ * The wrapper starts at opacity 0 (CSS); a <noscript> override keeps it visible
+ * without JS so the content is never hidden for crawlers or no-script visitors.
  */
 export default function HeroSequence({ root }: Props) {
-  const [play, setPlay] = useState(false);
+  const [phase, setPhase] = useState<'hidden' | 'playing' | 'shown'>('hidden');
 
   useEffect(() => {
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     let played = false;
     try {
       played = sessionStorage.getItem('heroPlayed') === '1';
+    } catch {
+      /* private mode */
+    }
+
+    if (reduced || played) {
+      setPhase('shown');
+      return;
+    }
+
+    try {
       sessionStorage.setItem('heroPlayed', '1');
     } catch {
-      /* private mode — animation just replays */
+      /* private mode */
     }
-    if (!reduced && !played) setPlay(true);
+
+    let timer = 0;
+    const start = () => {
+      window.clearTimeout(timer);
+      window.removeEventListener('signature:done', start);
+      setPhase('playing');
+    };
+
+    if ((window as { __signatureDone?: boolean }).__signatureDone) {
+      timer = window.setTimeout(start, 160); // tiny beat after the ink dries
+    } else {
+      window.addEventListener('signature:done', start, { once: true });
+      timer = window.setTimeout(start, 5200); // fallback if the event never fires
+    }
+
+    return () => {
+      window.clearTimeout(timer);
+      window.removeEventListener('signature:done', start);
+    };
   }, []);
 
   const ease = [0.22, 1, 0.36, 1] as const;
 
   const lineAnim = (i: number) =>
-    play
+    phase === 'playing'
       ? {
           opacity: [0, 1],
-          y: [26, 0],
-          filter: ['blur(8px)', 'blur(0px)'],
-          transition: { duration: 0.65, ease, delay: 0.45 + i * 0.14 },
+          y: [22, 0],
+          filter: ['blur(6px)', 'blur(0px)'],
+          transition: { duration: 0.6, ease, delay: i * 0.12 },
         }
       : {};
 
   return (
-    <div className="hero__inner">
+    <div className="hero__inner" style={{ opacity: phase === 'hidden' ? 0 : 1 }}>
       <p className="kicker hero__kicker" aria-label={EYEBROW}>
         <span aria-hidden="true" style={{ display: 'flex', flexWrap: 'wrap', columnGap: '0.55em' }}>
           {EYEBROW.split(' ').map((word, w, words) => {
@@ -57,8 +85,8 @@ export default function HeroSequence({ root }: Props) {
                     key={i}
                     initial={false}
                     animate={
-                      play
-                        ? { opacity: [0, 1], transition: { duration: 0.02, delay: 0.2 + (offset + i) * 0.014 } }
+                      phase === 'playing'
+                        ? { opacity: [0, 1], transition: { duration: 0.02, delay: 0.1 + (offset + i) * 0.014 } }
                         : {}
                     }
                   >

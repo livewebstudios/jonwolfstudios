@@ -16,7 +16,7 @@ collections:
       - name: "shows"
         label: "Shows"
         file: "_content/shows.json"
-        description: "Live dates. Past shows move below the fold automatically on the next publish."
+        description: "Live dates. Newest show up top on the site; the page reveals 15 at a time. Mark a show 'Past' once it has happened."
         fields:
           - label: "Shows"
             name: "shows"
@@ -24,11 +24,15 @@ collections:
             summary: "{{fields.date}} — {{fields.venue}} ({{fields.city}}, {{fields.state}})"
             fields:
               - { label: "Date", name: "date", widget: "date", format: "YYYY-MM-DD", date_format: "YYYY-MM-DD", time_format: false }
+              - { label: "Day of Week", name: "day", widget: "string", required: false, hint: "e.g. Saturday" }
               - { label: "Venue", name: "venue", widget: "string" }
               - { label: "City", name: "city", widget: "string" }
               - { label: "State", name: "state", widget: "string", default: "NJ" }
-              - { label: "Band", name: "band", widget: "string", default: "The British Invasion Years" }
-              - { label: "Ticket Link", name: "ticketUrl", widget: "string", required: false }
+              - { label: "Act", name: "act", widget: "select", options: ["The British Invasion Years", "Jon Wolf Solo Piano", "Private Event"], default: "The British Invasion Years" }
+              - { label: "Past show?", name: "past", widget: "boolean", default: false }
+              - { label: "Time", name: "time", widget: "string", required: false, hint: "e.g. 8:00 PM" }
+              - { label: "Tickets URL", name: "tickets_url", widget: "string", required: false }
+              - { label: "RSVP URL", name: "rsvp_url", widget: "string", required: false }
 
       - name: "posts"
         label: "Notes (Blog)"

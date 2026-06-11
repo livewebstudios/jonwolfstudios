@@ -25,7 +25,7 @@
   --font-mono: 'JetBrains Mono Variable', ui-monospace, monospace;
 
   /* Fluid scale */
-  --text-hero: clamp(3.5rem, 9vw, 7.5rem);
+  --text-hero: clamp(2.25rem, 5.5vw, 4.25rem);
   --text-h1: clamp(2.75rem, 6.5vw, 5rem);
   --text-h2: clamp(1.9rem, 4vw, 3rem);
   --text-h3: clamp(1.2rem, 2.5vw, 1.5rem);
@@ -261,6 +261,7 @@ a:hover {
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   border-bottom: 1px solid var(--scrim);
+  overflow: visible; /* swash tail crosses below the bottom edge */
 }
 
 .site-header__inner {
@@ -275,6 +276,10 @@ a:hover {
   display: inline-flex;
   align-items: center;
   background: none;
+  position: relative;
+  z-index: 2;
+  /* let the swash tail fall slightly below the header's bottom edge */
+  margin-bottom: -12px;
 }
 
 .brand img {
@@ -588,9 +593,9 @@ a:hover {
   display: grid;
   margin-bottom: 1.75rem;
   font-size: var(--text-hero);
-  font-weight: 800;
-  line-height: 0.98;
-  letter-spacing: -0.03em;
+  font-weight: 500;
+  line-height: 1.05;
+  letter-spacing: -0.015em;
 }
 
 .hero__line { display: block; }
