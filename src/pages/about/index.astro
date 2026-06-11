@@ -214,11 +214,18 @@ const jsonLd = [
     if (!reduced) {
       // clear any forwards-filled fade left over from the last close
       backdrop.getAnimations().forEach((a) => a.cancel());
-      requestAnimationFrame(() => {
+      const launch = () => {
+        // measure the target only once the image has real dimensions, so the
+        // zoom never animates toward a 0×0 box on a cache miss
         flip(img.getBoundingClientRect(), boxImg.getBoundingClientRect());
         backdrop.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 320, easing: 'ease-out' });
         boxCap.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 300, delay: 260, fill: 'backwards' });
-      });
+      };
+      if (boxImg.complete && boxImg.naturalWidth) {
+        requestAnimationFrame(launch);
+      } else {
+        boxImg.addEventListener('load', () => requestAnimationFrame(launch), { once: true });
+      }
     }
   };
 
