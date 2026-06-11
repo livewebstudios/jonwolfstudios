@@ -19,9 +19,6 @@ dist/
 .astro/
 .netlify/
 
-# Local-only project files — never pushed
-INSTRUCTIONS.md
-PUNCHUP.md
+# Non-essential files (docs, build scripts, raw assets) — kept locally, not pushed
+/ignore/
 *.psd
-/logo.png
-assets_raw/
