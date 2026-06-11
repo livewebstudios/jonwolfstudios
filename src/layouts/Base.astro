@@ -3,6 +3,7 @@ import '@fontsource-variable/bricolage-grotesque';
 import '@fontsource-variable/albert-sans';
 import '@fontsource-variable/jetbrains-mono';
 import '../styles/global.css';
+import SignatureLogo from '../components/SignatureLogo.astro';
 import { relRoot } from '../lib/paths';
 
 interface Props {
@@ -78,7 +79,7 @@ const isCurrent = (href: string) =>
     <header class="site-header">
       <div class="container site-header__inner">
         <a class="brand" href={root} aria-label="Jon Wolf — home">
-          <img src={root + 'images/logo.png'} alt="Jon Wolf" width="689" height="113" />
+          <SignatureLogo />
         </a>
 
         <button class="nav-toggle" aria-expanded="false" aria-controls="site-nav">MENU</button>

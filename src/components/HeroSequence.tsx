@@ -1,5 +1,5 @@
-import { useEffect, useMemo } from 'react';
-import { motion, useReducedMotion } from 'motion/react';
+import { useEffect, useState } from 'react';
+import { motion } from 'motion/react';
 
 interface Props {
   /** relative prefix back to site root, e.g. './' on home */
@@ -12,37 +12,37 @@ const EYEBROW = 'NORTH JERSEY · MUSICIAN · BUILDER';
  * Home hero — the one orchestrated entrance on the site.
  * Eyebrow types in, headline lines rise blur-to-sharp, sub + CTAs settle.
  * Total ≤ 1.6s, plays once per session.
+ *
+ * Hydration-safe: SSR markup is fully visible with no motion styles
+ * (initial={false}); the entrance is driven by keyframes after mount,
+ * so server and client HTML always match and no-JS visitors see content.
  */
 export default function HeroSequence({ root }: Props) {
-  const reduced = useReducedMotion();
-
-  const played = useMemo(
-    () => typeof window !== 'undefined' && sessionStorage.getItem('heroPlayed') === '1',
-    []
-  );
-  const skip = Boolean(reduced) || played;
+  const [play, setPlay] = useState(false);
 
   useEffect(() => {
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let played = false;
     try {
+      played = sessionStorage.getItem('heroPlayed') === '1';
       sessionStorage.setItem('heroPlayed', '1');
     } catch {
       /* private mode — animation just replays */
     }
+    if (!reduced && !played) setPlay(true);
   }, []);
 
   const ease = [0.22, 1, 0.36, 1] as const;
 
-  const line = {
-    hidden: skip
-      ? { opacity: 1, y: 0, filter: 'blur(0px)' }
-      : { opacity: 0, y: 26, filter: 'blur(8px)' },
-    show: (i: number) => ({
-      opacity: 1,
-      y: 0,
-      filter: 'blur(0px)',
-      transition: skip ? { duration: 0 } : { duration: 0.65, ease, delay: 0.45 + i * 0.14 },
-    }),
-  };
+  const lineAnim = (i: number) =>
+    play
+      ? {
+          opacity: [0, 1],
+          y: [26, 0],
+          filter: ['blur(8px)', 'blur(0px)'],
+          transition: { duration: 0.65, ease, delay: 0.45 + i * 0.14 },
+        }
+      : {};
 
   return (
     <div className="hero__inner">
@@ -55,9 +55,12 @@ export default function HeroSequence({ root }: Props) {
                 {word.split('').map((ch, i) => (
                   <motion.span
                     key={i}
-                    initial={skip ? { opacity: 1 } : { opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={skip ? { duration: 0 } : { duration: 0.02, delay: 0.2 + (offset + i) * 0.014 }}
+                    initial={false}
+                    animate={
+                      play
+                        ? { opacity: [0, 1], transition: { duration: 0.02, delay: 0.2 + (offset + i) * 0.014 } }
+                        : {}
+                    }
                   >
                     {ch}
                   </motion.span>
@@ -69,35 +72,23 @@ export default function HeroSequence({ root }: Props) {
       </p>
 
       <h1 className="hero__title">
-        <motion.span className="hero__line" variants={line} custom={0} initial="hidden" animate="show">
+        <motion.span className="hero__line" initial={false} animate={lineAnim(0)}>
           Jon Wolf —
         </motion.span>
-        <motion.span
-          className="hero__line hero__line--music"
-          variants={line}
-          custom={1}
-          initial="hidden"
-          animate="show"
-        >
+        <motion.span className="hero__line hero__line--music" initial={false} animate={lineAnim(1)}>
           keys on stage,
         </motion.span>
-        <motion.span
-          className="hero__line hero__line--web"
-          variants={line}
-          custom={2}
-          initial="hidden"
-          animate="show"
-        >
+        <motion.span className="hero__line hero__line--web" initial={false} animate={lineAnim(2)}>
           code off it.
         </motion.span>
       </h1>
 
-      <motion.p className="lede hero__lede" variants={line} custom={3} initial="hidden" animate="show">
+      <motion.p className="lede hero__lede" initial={false} animate={lineAnim(3)}>
         Performing keyboardist &amp; guitarist with The British Invasion Years. Owner of Live Web
         Studios since 2004. Now building AI workflows for businesses that want in.
       </motion.p>
 
-      <motion.div className="hero__ctas" variants={line} custom={4} initial="hidden" animate="show">
+      <motion.div className="hero__ctas" initial={false} animate={lineAnim(4)}>
         <a className="btn" href={root + 'music/'}>
           The Stage
         </a>

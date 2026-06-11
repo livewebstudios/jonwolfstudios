@@ -1,0 +1,237 @@
+---
+/**
+ * Animated signature wordmark — "JON WOLF" (Rockstar) + underline swash
+ * (Rockstar Swashes), extracted as real outlines via opentype.js.
+ *
+ * Draws itself like a hand signing a document: letters reveal left-to-right
+ * behind animated clip rects, then the swash strokes through underneath via
+ * a dashoffset mask. A pen point leads the reveal, shedding small sparks.
+ *
+ * Static-first: with no JS (or reduced motion, or already played this
+ * session) the full mark is simply visible.
+ */
+import { LETTERS, SWASH, SWASH_SPINE, VIEWBOX } from './sig-paths';
+---
+
+<svg class="sig" viewBox={VIEWBOX} aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    {LETTERS.map((l, i) => (
+      <clipPath id={`sigc${i}`}>
+        <rect
+          class="sig__clip"
+          x={l.x1 - 3}
+          y={l.y1 - 5}
+          width={l.x2 - l.x1 + 6}
+          height={l.y2 - l.y1 + 10}
+          data-w={l.x2 - l.x1 + 6}
+        />
+      </clipPath>
+    ))}
+    <mask id="sigm">
+      <path
+        class="sig__spine"
+        d={SWASH_SPINE}
+        fill="none"
+        stroke="#fff"
+        stroke-width="44"
+        stroke-linecap="round"
+      />
+    </mask>
+  </defs>
+
+  <g class="sig__letters">
+    {LETTERS.map((l, i) => (
+      <path d={l.d} fill="currentColor" clip-path={`url(#sigc${i})`} />
+    ))}
+  </g>
+
+  <path class="sig__swash" d={SWASH.d} fill="currentColor" mask="url(#sigm)" />
+
+  <g class="sig__fx"></g>
+</svg>
+
+<style>
+  .sig {
+    height: 44px;
+    width: auto;
+    display: block;
+    color: var(--tungsten);
+    overflow: visible; /* sparks fly past the canvas */
+  }
+
+  @media (max-width: 760px) {
+    .sig { height: 36px; }
+  }
+</style>
+
+<script>
+  import { LETTERS, SWASH } from './sig-paths';
+
+  const svg = document.querySelector<SVGSVGElement>('.sig');
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const played = sessionStorage.getItem('sigDrawn') === '1';
+
+  if (svg && !reduced && !played) {
+    try {
+      sessionStorage.setItem('sigDrawn', '1');
+    } catch {
+      /* private mode */
+    }
+
+    const clips = Array.from(svg.querySelectorAll<SVGRectElement>('.sig__clip'));
+    const spine = svg.querySelector<SVGPathElement>('.sig__spine')!;
+    const fx = svg.querySelector<SVGGElement>('.sig__fx')!;
+    const spineLen = spine.getTotalLength();
+
+    // Hide everything before first paint
+    clips.forEach((r) => r.setAttribute('width', '0'));
+    spine.style.strokeDasharray = String(spineLen);
+    spine.style.strokeDashoffset = String(spineLen);
+
+    // Pen point
+    const pen = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    pen.setAttribute('r', '3');
+    pen.setAttribute('fill', '#FFD9A0');
+    pen.style.opacity = '0';
+    fx.appendChild(pen);
+
+    // ---- Timeline: per-letter durations proportional to width ----
+    const GAP = 45; // pen lift between letters (ms)
+    const LETTERS_MS = 1450;
+    const SWASH_PAUSE = 130;
+    const SWASH_MS = 480;
+    const totalW = LETTERS.reduce((n, l) => n + (l.x2 - l.x1), 0);
+
+    interface Seg {
+      start: number;
+      end: number;
+      draw: (t: number) => { x: number; y: number } | null;
+    }
+
+    const segs: Seg[] = [];
+    let cursor = 250; // beat before the pen touches down
+
+    LETTERS.forEach((l, i) => {
+      const w = l.x2 - l.x1;
+      const dur = (w / totalW) * LETTERS_MS;
+      const rect = clips[i];
+      const midY = (l.y1 + l.y2) / 2;
+      const start = cursor;
+      segs.push({
+        start,
+        end: start + dur,
+        draw: (t) => {
+          rect?.setAttribute('width', String((w + 6) * t));
+          // pen wanders vertically like a real stroke
+          const y = midY + Math.sin(t * Math.PI * 2.2 + i) * (l.y2 - l.y1) * 0.28;
+          return { x: l.x1 + w * t, y };
+        },
+      });
+      cursor += dur + GAP;
+    });
+
+    // travel back to the swash start (pen up — no drawing, no sparks)
+    cursor += SWASH_PAUSE;
+    const swashStart = cursor;
+    segs.push({
+      start: swashStart,
+      end: swashStart + SWASH_MS,
+      draw: (t) => {
+        spine.style.strokeDashoffset = String(spineLen * (1 - t));
+        const p = spine.getPointAtLength(spineLen * t);
+        return { x: p.x, y: p.y };
+      },
+    });
+    const TOTAL = cursor + SWASH_MS;
+
+    // ---- Sparks ----
+    interface Spark {
+      el: SVGCircleElement;
+      x: number;
+      y: number;
+      vx: number;
+      vy: number;
+      born: number;
+      life: number;
+    }
+    const sparks: Spark[] = [];
+    const COLORS = ['#F2A33C', '#FFD9A0', '#E4543F', '#FFF3DF'];
+
+    const spawn = (x: number, y: number, now: number) => {
+      const el = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      el.setAttribute('r', String(0.9 + Math.random() * 1.7));
+      el.setAttribute('fill', COLORS[(Math.random() * COLORS.length) | 0]!);
+      fx.appendChild(el);
+      // bias: up and back-left, like grindstone sparks off the nib
+      const ang = Math.PI * (0.85 + Math.random() * 0.85);
+      const speed = 40 + Math.random() * 130;
+      sparks.push({
+        el,
+        x,
+        y,
+        vx: Math.cos(ang) * speed,
+        vy: -Math.abs(Math.sin(ang)) * speed * 0.9,
+        born: now,
+        life: 280 + Math.random() * 320,
+      });
+    };
+
+    let t0: number | null = null;
+    let last = 0;
+
+    const frame = (now: number) => {
+      if (t0 === null) {
+        t0 = now;
+        last = now;
+      }
+      const t = now - t0;
+      const dt = Math.min(48, now - last) / 1000;
+      last = now;
+
+      // drawing
+      let penPos: { x: number; y: number } | null = null;
+      for (const seg of segs) {
+        if (t >= seg.end) {
+          seg.draw(1);
+        } else if (t >= seg.start) {
+          penPos = seg.draw((t - seg.start) / (seg.end - seg.start));
+        }
+      }
+
+      if (penPos) {
+        pen.style.opacity = '1';
+        pen.setAttribute('cx', String(penPos.x));
+        pen.setAttribute('cy', String(penPos.y));
+        if (Math.random() < 0.75) spawn(penPos.x, penPos.y, now);
+        if (Math.random() < 0.35) spawn(penPos.x, penPos.y, now);
+      } else {
+        pen.style.opacity = '0';
+      }
+
+      // physics
+      for (let i = sparks.length - 1; i >= 0; i--) {
+        const s = sparks[i]!;
+        const age = now - s.born;
+        if (age > s.life) {
+          s.el.remove();
+          sparks.splice(i, 1);
+          continue;
+        }
+        s.vy += 320 * dt; // gravity
+        s.x += s.vx * dt;
+        s.y += s.vy * dt;
+        s.el.setAttribute('cx', String(s.x));
+        s.el.setAttribute('cy', String(s.y));
+        s.el.style.opacity = String(1 - age / s.life);
+      }
+
+      if (t < TOTAL + 700 || sparks.length > 0) {
+        requestAnimationFrame(frame);
+      } else {
+        pen.remove();
+      }
+    };
+
+    requestAnimationFrame(frame);
+  }
+</script>
