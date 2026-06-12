@@ -5,9 +5,9 @@ backend:
 media_folder: "public/images/uploads"
 public_folder: "images/uploads"
 
-site_url: https://jonwolfnj.com
-display_url: https://jonwolfnj.com
-logo_url: https://jonwolfnj.com/images/logo.png
+site_url: https://jonwolfstudios.com
+display_url: https://jonwolfstudios.com
+logo_url: https://jonwolfstudios.com/images/logo.png
 
 collections:
   - name: "content"

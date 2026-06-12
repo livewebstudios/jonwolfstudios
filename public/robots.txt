@@ -3,4 +3,4 @@ Allow: /
 Disallow: /admin/
 Disallow: /thanks/
 
-Sitemap: https://jonwolfnj.com/sitemap-index.xml
+Sitemap: https://jonwolfstudios.com/sitemap-index.xml

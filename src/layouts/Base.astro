@@ -26,12 +26,12 @@ const {
   world = 'music',
   jsonLd = [],
   ogType = 'website',
-  ogImage = 'https://jonwolfnj.com/images/logo.png',
+  ogImage = 'https://jonwolfstudios.com/images/logo.png',
 } = Astro.props;
 
 const pathname = Astro.url.pathname;
 const root = relRoot(pathname);
-const canonical = new URL(pathname, 'https://jonwolfnj.com').href;
+const canonical = new URL(pathname, 'https://jonwolfstudios.com').href;
 
 const navItems = [
   { label: 'HOME', href: '' },
