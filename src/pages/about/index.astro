@@ -67,16 +67,6 @@ const jsonLd = [
             people who keeps the machine running. The road comes in stretches: some runs last weeks
             at a time, and the dates aren't always domestic — wherever the show is booked, Jon goes.
           </p>
-          <figure class="pullquote reveal">
-            <blockquote>
-              <p>
-                “People think music is about talent. It's not. It's about showing up — to rehearsal,
-                to the gig, to the moment when everything falls apart at soundcheck and you fix it
-                anyway.”
-              </p>
-            </blockquote>
-            <figcaption>— JON WOLF</figcaption>
-          </figure>
           <p class="reveal">
             There's a quieter craft underneath the gig, too. Jon assists in laying out the band's
             multi-voice harmony charts — so if the vocals lock in just right on a chorus, there's a
@@ -104,6 +94,31 @@ const jsonLd = [
         </div>
       </div>
 
+      <!-- Quote card — full width between the bio and the history strip -->
+      <div class="container" style="margin-top: 2.5rem;">
+        <figure class="quote-card reveal">
+          <img
+            class="quote-card__bg"
+            src={root + 'images/atmos/quote-yoga.jpg'}
+            alt=""
+            loading="lazy"
+            width="2100"
+            height="900"
+          />
+          <div class="quote-card__inner">
+            <span class="quote-card__mark" aria-hidden="true">&ldquo;</span>
+            <blockquote>
+              <p>
+                People think music is about talent. It's not. It's about showing up — to
+                rehearsal, to the gig, to the moment when everything falls apart at soundcheck
+                and you fix it anyway.
+              </p>
+            </blockquote>
+            <figcaption class="quote-card__sig">— JON WOLF</figcaption>
+          </div>
+        </figure>
+      </div>
+
       <!-- Throwback strip — sprinkle of history, kept small -->
       <div class="container throwback">
         <figure class="throwback__item reveal">
@@ -114,7 +129,7 @@ const jsonLd = [
         </figure>
         <figure class="throwback__item reveal">
           <button class="lb-trigger" type="button" aria-label="View photo larger">
-            <img src={root + 'images/jon/woodstock.jpg'} alt="A young Jon Wolf playing keyboards" loading="lazy" width="757" height="1099" />
+            <img src={root + 'images/jon/woodstock-sq.jpg'} alt="A young Jon Wolf playing keyboards" loading="lazy" width="1400" height="1400" />
           </button>
           <figcaption class="mono-label">STILL AT IT, DECADES LATER</figcaption>
         </figure>

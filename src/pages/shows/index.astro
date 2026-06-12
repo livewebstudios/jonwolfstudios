@@ -140,14 +140,25 @@ const breadcrumb = {
           <button class="btn btn--ghost shows-more" type="button">Read more</button>
         </div>
 
-        <figure class="pullquote reveal" style="margin-top: 3rem;">
-          <blockquote>
-            <p>
-              “The band doesn't start when the first note plays. It starts in the parking lot,
-              loading in, when somebody holds the door.”
-            </p>
-          </blockquote>
-          <figcaption>— JON WOLF</figcaption>
+        <figure class="quote-card reveal" style="margin-top: 3rem;">
+          <img
+            class="quote-card__bg"
+            src={root + 'images/atmos/quote-loadin.jpg'}
+            alt=""
+            loading="lazy"
+            width="2100"
+            height="900"
+          />
+          <div class="quote-card__inner">
+            <span class="quote-card__mark" aria-hidden="true">&ldquo;</span>
+            <blockquote>
+              <p>
+                The band doesn't start when the first note plays. It starts in the parking lot,
+                loading in, when somebody holds the door.
+              </p>
+            </blockquote>
+            <figcaption class="quote-card__sig">— JON WOLF</figcaption>
+          </div>
         </figure>
         <noscript>
           <style>
@@ -199,6 +210,20 @@ const breadcrumb = {
     display: grid;
     align-items: end;
     padding-top: clamp(5rem, 12vh, 8rem);
+  }
+
+  /* Shows hero — turn the house lights up. Brighter image, lighter scrim,
+     while the headline side stays dark enough to read. */
+  .page-head .bg-layer--bright img {
+    opacity: 0.96;
+  }
+
+  .page-head .bg-layer--bright::after {
+    background:
+      linear-gradient(90deg, color-mix(in srgb, var(--ink) 80%, transparent) 0%,
+        color-mix(in srgb, var(--ink) 20%, transparent) 56%, transparent 100%),
+      linear-gradient(0deg, var(--ink) 0%, transparent 40%),
+      linear-gradient(180deg, var(--ink) 0%, transparent 14%);
   }
 
   .setlist__row.is-past .setlist__date,

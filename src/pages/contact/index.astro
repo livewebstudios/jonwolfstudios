@@ -1,5 +1,11 @@
 ---
 import Base from '../../layouts/Base.astro';
+import { relRoot } from '../../lib/paths';
+
+const root = relRoot(Astro.url.pathname);
+// Enough seamless tiles to cover two viewports wide on any screen — one shared,
+// cached image. The pan loops by exactly one tile, so the restart is invisible.
+const FLOW_TILES = 8;
 
 const jsonLd = [
   {
@@ -33,6 +39,23 @@ const jsonLd = [
 >
   <article data-world="music">
     <section class="section page-head">
+      <div class="flow" aria-hidden="true">
+        <div class="flow__track">
+          {
+            Array.from({ length: FLOW_TILES }).map(() => (
+              <img
+                class="flow__tile"
+                src={root + 'images/atmos/contact-flow.jpg'}
+                alt=""
+                width="1156"
+                height="768"
+                decoding="async"
+              />
+            ))
+          }
+        </div>
+        <div class="flow__scrim"></div>
+      </div>
       <div class="container">
         <p class="kicker reveal">ONE INBOX</p>
         <h1 class="reveal">Let's talk.</h1>
@@ -98,10 +121,60 @@ const jsonLd = [
 
 <style>
   .page-head {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
     padding-block: clamp(5rem, 12vh, 8rem) var(--space-block);
+    background: var(--ink);
+  }
+
+  /* Flowing-light backdrop — the automation card, reborn as a slow rightward pan.
+     The tile is horizontally seamless, so the loop has no seam and no stutter. */
+  .flow {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    overflow: hidden;
+  }
+
+  .flow__track {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    width: max-content;
+    height: 100%;
+    will-change: transform;
+    /* drift right by exactly one tile (1 / FLOW_TILES = 12.5%), then repeat —
+       endpoints are identical tiles, so the wrap is invisible */
+    animation: flow-pan 44s linear infinite;
+  }
+
+  .flow__tile {
+    height: 100%;
+    width: auto;
+    display: block;
+    object-fit: cover;
+    user-select: none;
+    -webkit-user-drag: none;
+  }
+
+  @keyframes flow-pan {
+    from { transform: translateX(-12.5%); }
+    to { transform: translateX(0); }
+  }
+
+  /* Keep the left-aligned headline crisp; let the flow breathe on the right. */
+  .flow__scrim {
+    position: absolute;
+    inset: 0;
     background:
-      radial-gradient(ellipse 70% 90% at 80% -20%, color-mix(in srgb, var(--tungsten) 10%, transparent), transparent 60%),
-      radial-gradient(ellipse 50% 70% at 10% 120%, color-mix(in srgb, var(--signal) 6%, transparent), transparent 65%);
+      linear-gradient(90deg, var(--ink) 6%, color-mix(in srgb, var(--ink) 55%, transparent) 48%, transparent 82%),
+      linear-gradient(0deg, var(--ink) 2%, transparent 38%),
+      radial-gradient(ellipse 70% 90% at 80% -20%, color-mix(in srgb, var(--tungsten) 8%, transparent), transparent 60%);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .flow__track { animation: none; transform: translateX(-12.5%); }
   }
 
   .contact-zone { border-top: 1px solid var(--scrim); }

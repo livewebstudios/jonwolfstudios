@@ -126,17 +126,28 @@ const personJsonLd = {
     </a>
   </section>
 
-  <!-- PULL QUOTE — the bridge between the two doors -->
+  <!-- QUOTE CARD — the bridge between the two doors -->
   <section class="section" data-world="music">
     <div class="container">
-      <figure class="pullquote reveal">
-        <blockquote>
-          <p>
-            “I've built hundreds of websites and played thousands of shows. Both teach me the same
-            thing: nobody cares how complicated it was. They only care how it feels.”
-          </p>
-        </blockquote>
-        <figcaption>— JON WOLF</figcaption>
+      <figure class="quote-card reveal">
+        <img
+          class="quote-card__bg"
+          src={root + 'images/atmos/quote-study-wide.jpg'}
+          alt=""
+          loading="lazy"
+          width="2100"
+          height="900"
+        />
+        <div class="quote-card__inner">
+          <span class="quote-card__mark" aria-hidden="true">&ldquo;</span>
+          <blockquote>
+            <p>
+              I've built hundreds of websites and played thousands of shows. Both teach me the
+              same thing: nobody cares how complicated it was. They only care how it feels.
+            </p>
+          </blockquote>
+          <figcaption class="quote-card__sig">— JON WOLF</figcaption>
+        </div>
       </figure>
     </div>
   </section>
@@ -208,4 +219,5 @@ const personJsonLd = {
     gap: 1.25rem;
     padding-block: clamp(1.5rem, 4vw, 3rem);
   }
+
 </style>

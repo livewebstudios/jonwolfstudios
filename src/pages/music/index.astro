@@ -64,14 +64,25 @@ const jsonLd = [
           <RigExplorer client:visible pedalboardSrc={root + 'images/gear/pedalboard.jpg'} />
         </div>
 
-        <figure class="pullquote reveal" style="margin-top: 2.5rem;">
-          <blockquote>
-            <p>
-              “A chord is just three notes that decided to stop arguing and agree on something.
-              I've been chasing that feeling for 40 years.”
-            </p>
-          </blockquote>
-          <figcaption>— JON WOLF</figcaption>
+        <figure class="quote-card reveal" style="margin-top: 2.5rem;">
+          <img
+            class="quote-card__bg"
+            src={root + 'images/atmos/quote-piano.jpg'}
+            alt=""
+            loading="lazy"
+            width="2100"
+            height="900"
+          />
+          <div class="quote-card__inner">
+            <span class="quote-card__mark" aria-hidden="true">&ldquo;</span>
+            <blockquote>
+              <p>
+                A chord is just three notes that decided to stop arguing and agree on something.
+                I've been chasing that feeling for 40 years.
+              </p>
+            </blockquote>
+            <figcaption class="quote-card__sig">— JON WOLF</figcaption>
+          </div>
         </figure>
       </div>
     </section>
@@ -95,19 +106,31 @@ const jsonLd = [
             multi-voice harmony charts — the arrangements that keep the voices locked where the
             records put them. It's the kind of work the audience never sees and always hears.
           </p>
-          <figure class="pullquote reveal">
-            <blockquote>
-              <p>
-                “You can practice alone for years. But you don't learn to listen until somebody
-                else's downbeat depends on you.”
-              </p>
-            </blockquote>
-            <figcaption>— JON WOLF</figcaption>
-          </figure>
           <p class="reveal mono">
             <a href="https://britishinvasionyears.com" rel="noopener">britishinvasionyears.com →</a>
           </p>
         </div>
+
+        <figure class="quote-card reveal" style="margin-top: 2.5rem;">
+          <img
+            class="quote-card__bg"
+            src={root + 'images/atmos/quote-stage.jpg'}
+            alt=""
+            loading="lazy"
+            width="2100"
+            height="900"
+          />
+          <div class="quote-card__inner">
+            <span class="quote-card__mark" aria-hidden="true">&ldquo;</span>
+            <blockquote>
+              <p>
+                You can practice alone for years. But you don't learn to listen until somebody
+                else's downbeat depends on you.
+              </p>
+            </blockquote>
+            <figcaption class="quote-card__sig">— JON WOLF</figcaption>
+          </div>
+        </figure>
       </div>
     </section>
 
